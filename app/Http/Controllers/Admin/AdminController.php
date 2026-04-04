@@ -293,9 +293,32 @@ class AdminController extends Controller
     public function reviews()
     {
         $reviews = Review::get();
-        return view('admin.order.review', compact('reviews'));
-    }
+        $users = \App\Models\User::select('id', 'name')->get();
+        $products = \App\Models\Product::select('id', 'product_name')->get();
+        $orders = \App\Models\Order::select('id')->get(); // change if you have order_number
 
+        return view('admin.order.review', compact('reviews', 'users', 'products', 'orders'));
+    }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'user_id'    => 'required|integer|exists:users,id',
+            'product_id' => 'nullable|integer',
+            'order_id'   => 'nullable|integer',
+            'command'    => 'required|string|max:1000',
+            'star_count' => 'required|integer|min:1|max:5',
+        ]);
+
+        Review::create([
+            'user_id'    => $request->user_id,
+            'product_id' => $request->product_id,
+            'order_id'   => $request->order_id,
+            'command'    => $request->command,
+            'star_count' => $request->star_count,
+        ]);
+
+        return back()->with('success', 'Review added successfully.');
+    }
     public function update(Request $request)
     {
         $request->validate([

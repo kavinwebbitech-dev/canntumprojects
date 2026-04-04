@@ -27,13 +27,19 @@
                 font-weight: 600;
                 line-height: 1;
             }
+
+            .cart_detail p {
+                margin-bottom: 24px;
+            }
+
+           
         </style>
 
         <div class="container">
             @if (empty(session('cart')))
                 <section class="cart_detail">
                     <div class="text-center">
-                        <div class="mb-4" style="color: #d0d0d0;">
+                        <div class="mb-3" style="color: #d0d0d0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor"
                                 viewBox="0 0 16 16">
                                 <path
@@ -41,8 +47,8 @@
                             </svg>
                         </div>
                         <h4 style="font-weight: 500; color: #444;">Your cart is empty</h4>
-                        <p style="color: #aaa; font-size: 15px;">You haven't added any products to your cart yet.</p>
-                        <a href="{{ route('home') }}" class="btn mt-2"
+                        <p style="color: #aaa;">You haven't added any products to your cart yet.</p>
+                        <a href="{{ route('home') }}" class="btn"
                             style="border: 1px solid #333; padding: 10px 28px; font-size: 15px; color: #333; border-radius: 2px;">
                             Continue Shopping
                         </a>
@@ -56,7 +62,7 @@
                     </ol>
                 </nav>
 
-                <h2 class="page_title">Cart Details</h2>
+                <h2 class="page_title mb-3">Cart Details</h2>
 
                 <div class="cart_detail">
                     <div class="row gy-4">

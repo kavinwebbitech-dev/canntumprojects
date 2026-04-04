@@ -123,7 +123,7 @@
             </div>
 
             <div class="list_product">
-                <div class="mt-5">
+                <div class="mt-3">
                     <div class="product_collections">
                         <div class="row gy-4">
 

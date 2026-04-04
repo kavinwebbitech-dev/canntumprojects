@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\StateController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\orderController;
 use App\Http\Controllers\Admin\ComplaintController;
+use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Frontend\AuthController;
 use App\Http\Controllers\Frontend\MemberController;
 use App\Http\Controllers\Frontend\HomeController;
@@ -272,6 +273,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('admin/banner-image-add', 'bannerImageAdd')->name('banner.add');
         Route::get('admin/banner-image-delete/{id}', 'bannerImageDelete')->name('banner_images.delete');
         Route::get('admin/reviews', 'reviews')->name('review');
+        Route::post('/admin/reviews/store', 'store')->name('admin.reviews.store');
         Route::post('/admin/reviews/update', 'update')->name('admin.reviews.update');
         Route::post('/admin/reviews/delete', 'delete')->name('admin.reviews.delete');
     });
@@ -322,11 +324,11 @@ Route::middleware(['admin.auth'])->group(function () {
 
         //coupon code
         Route::get('/coupon-code', 'coupon_code')->name('admin.coupon_code');
-        Route::get('/product-coupon_code-add', 'coupon_code_add')->name('admin.product.coupon_code.add');
-        Route::post('/product-coupon_code-store', 'coupon_code_store')->name('admin.product.coupon_code.store');
-        Route::get('/product-coupon_code-delete/{id}', 'coupon_code_delete')->name('product.coupon_code.delete');
-        Route::get('/product-coupon_code-edit/{id}', 'coupon_code_edit')->name('admin.product.coupon_code.edit');
-        Route::post('/product-coupon_code-update', 'coupon_code_update')->name('admin.product.coupon_code.update');
+        Route::get('/product-coupon_code-add', 'coupon_code_add')->name('admin.coupon_code.add');
+        Route::post('/product-coupon_code-store', 'coupon_code_store')->name('admin.coupon_code.store');
+        Route::get('/product-coupon_code-delete/{id}', 'coupon_code_delete')->name('admin.coupon_code.delete');
+        Route::get('/product-coupon_code-edit/{id}', 'coupon_code_edit')->name('admin.coupon_code.edit');
+        Route::post('/product-coupon_code-update', 'coupon_code_update')->name('admin.coupon_code.update');
         //color code
         Route::get('/color', 'color')->name('admin.color');
         Route::get('/product-color-add', 'color_add')->name('admin.product.color.add');
@@ -398,6 +400,19 @@ Route::middleware(['admin.auth'])->group(function () {
         'index' => 'admin.complaints.index'
     ]);
     Route::post('admin/complaints/reply', [ComplaintController::class, 'reply'])->name('complaints.reply');
+
+
+    Route::get('/admin/shipping-charge', [ShippingChargeController::class, 'shippingCharge'])->name('admin.shipping_charge');
+
+    Route::get('/admin/shipping-charge/create', [ShippingChargeController::class, 'create'])->name('admin.shipping_charge.create');
+
+    Route::post('/admin/shipping-charge/store', [ShippingChargeController::class, 'store'])->name('admin.shipping_charge.store');
+
+    Route::get('/admin/shipping-charge/edit/{id}', [ShippingChargeController::class, 'edit'])->name('admin.shipping_charge.edit');
+
+    Route::post('/admin/shipping-charge/update', [ShippingChargeController::class, 'updateShippingCharge'])->name('admin.shipping_charge.update');
+
+    Route::get('/admin/shipping-charge/delete/{id}', [ShippingChargeController::class, 'delete'])->name('admin.shipping_charge.delete');
 
     // Route::prefix('complaints')->group(function () {
 

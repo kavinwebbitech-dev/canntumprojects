@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('product_details', function (Blueprint $table) {
-            $table->longText('gallery_images')->nullable()->after('images');
-        });
+         Schema::table('orders', function (Blueprint $table) {
+        $table->double('shipping_charge', 10, 2)->default(0)->after('total_amount');
+       
+    });
     }
 
     /**

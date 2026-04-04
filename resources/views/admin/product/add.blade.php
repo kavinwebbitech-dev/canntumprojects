@@ -153,7 +153,7 @@
                                         @enderror
                                     </div>
                                     <div class="mb-3 col-md-6">
-                                        <label class="form-label">Thumbnail Image (Square size, e.g., 500 × 500 px)</label>
+                                        <label class="form-label">Thumbnail Image (Square image – 1:1 ratio)</label>
                                         <input type="file" name="file1" class="form-control image_input" id="file1"
                                             accept="image/*" />
                                         <div id="imagePreview"></div>
@@ -164,7 +164,7 @@
                                 </div>
 
                                 <div class="mb-3 col-md-6">
-                                    <label class="form-label text-primary">Products Details Image-(Max 1 MB -e.g.,500×500 px)</label>
+                                    <label class="form-label text-primary">Products Details Image-(Max 1 MB (Square image – 1:1 ratio))</label>
                                     <input type="file" name="gallery_images" id="gallery_images" class="form-control"
                                         accept="image/*">
                                     <div id="galleryPreview" class="mt-2"></div>
@@ -182,7 +182,7 @@
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label">Discount (%)</label>
                                         <input type="number" name="discount" class="form-control" placeholder="Ex: 50"
-                                            value="{{ old('discount', 0) }}" step="0.01">
+                                            value="{{ old('discount') }}" step="0.01">
                                         @error('discount')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -285,7 +285,7 @@
                                                     <th style="width: 12%;">Color</th>
                                                     <th style="width: 12%;">Size</th>
                                                     <th style="width: 10%;">Quantity</th>
-                                                    <th style="width: 36%;">Variantes images-(Max 4 -e.g.,500×500 px-(Max 1 MB))
+                                                    <th style="width: 36%;">Variantes images-(Max 4 -(Square image – 1:1 ratio)-(Max 1 MB))
                                                     </th>
                                                     {{-- <th style="width: 30%;">Images-(e.g., 500 × 500px)</th> --}}
                                                     <th style="width: 10%;">Action</th>
@@ -338,7 +338,6 @@
                 }
             });
 
-            // Hide variants table initially
             if ($('#variantsBody tr').length === 0) {
                 $('#variantsContainer').addClass('hidden');
             }

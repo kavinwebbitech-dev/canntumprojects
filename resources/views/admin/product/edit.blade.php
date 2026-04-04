@@ -136,7 +136,7 @@
                 </div>
             </div>
             <div class="col-md-6 mb-3">
-                <label class="text-primary">Products Details Image-(Max 1 MB -e.g.,500×500 px)</label>
+                <label class="text-primary">Products Details Image-(Max 1 MB (Square image – 1:1 ratio))</label>
                 <input type="file" name="gallery_images" id="gallery_images" class="form-control">
 
                 {{-- Hidden input to track if we should delete the existing image --}}
@@ -237,7 +237,7 @@
                             <th>Color</th>
                             <th>Size</th>
                             <th>Qty</th>
-                            <th>Variantes images-(Max 4 -e.g.,500×500 px-(Max 1 MB))</th>
+                            <th>Variantes images-(Max 4 -(Square image – 1:1 ratio)-(Max 1 MB))</th>
                             {{-- <th>Images-(e.g., 500 × 500px)</th> --}}
                             <th>Action</th>
                         </tr>

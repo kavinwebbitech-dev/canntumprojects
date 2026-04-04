@@ -22,7 +22,7 @@
     <div class="card-header">
         <h4 class="card-title">Coupon code</h4>
         <button type="button" class="btn" style=" background-color: #001E40 !important;color:#fff"
-            onclick="window.location.href = '{{ route('admin.product.coupon_code.add') }}'">
+            onclick="window.location.href = '{{ route('admin.coupon_code.add') }}'">
             Add New
         </button>
 
@@ -92,10 +92,10 @@
                             </td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="{{ route('admin.product.coupon_code.edit', $item->id) }}"
+                                    <a href="{{ route('admin.coupon_code.edit', $item->id) }}"
                                         class="btn btn-success shadow btn-xs sharp me-2"><i
                                             class="fas fa-pencil-alt"></i></a>
-                                    <a href="{{ route('product.coupon_code.delete', $item->id) }}"
+                                    <a href="{{ route('admin.coupon_code.delete', $item->id) }}"
                                         class="btn btn-danger shadow btn-xs sharp "><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>

@@ -158,9 +158,9 @@
                                 }
 
                                 $coupon = (float) ($order->coupon_discount ?? 0);
-                                $shipping = (float) ($order->shipping_cost ?? 0);
+                                $shippingCharge = (float) ($order->shipping_charge ?? 0);
 
-                                $finalTotal = $subtotal + $final_gst + $shipping - $coupon;
+                                $finalTotal = $subtotal + $final_gst + $shippingCharge - $coupon;
 
                                 $cgst = $final_gst / 2;
                                 $sgst = $final_gst / 2;
@@ -178,7 +178,7 @@
                                     <p>Subtotal</p>
                                 </dd>
                                 <dd class="col-6">
-                                    <p class="text-end">₹ {{ number_format(round($subtotal, 2), 2) }}</p>
+                                    <p class="text-end">₹ {{ number_format($subtotal, 2) }}</p>
                                 </dd>
 
                                 {{-- @if ($shippingState == $storeState)
@@ -226,7 +226,13 @@
                                     <p>Shipping</p>
                                 </dd>
                                 <dd class="col-6">
-                                    <p class="text-end">FREE</p>
+                                    <p class="text-end">
+                                        @if ($shippingCharge > 0)
+                                            ₹ {{ number_format($shippingCharge, 2) }}
+                                        @else
+                                            FREE
+                                        @endif
+                                    </p>
                                 </dd>
 
                             </dl>

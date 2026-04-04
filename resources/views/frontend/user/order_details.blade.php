@@ -261,10 +261,6 @@
                         <h1 class="total_title">ORDER SUMMARY</h1>
 
                         @php
-                            // ✅ CORRECT CALCULATION from order_details table
-                            // subtotal  = sum of (offer_price × quantity) for each item
-                            // gst       = sum of (subtotal_per_item × product_gst / 100)
-                            // grandTotal = subtotal + gst - coupon_discount
 
                             $subtotal = 0;
                             $totalGst = 0;
@@ -276,8 +272,8 @@
                                 $subtotal += $itemSubtotal;
                                 $totalGst += $itemGst;
                             }
-
-                            $grandTotal = $subtotal + $totalGst - $couponDiscount;
+                            $shipping_charge = (float) ($orders->shipping_charge ?? 0);
+                            $grandTotal = $subtotal + $totalGst + $shipping_charge - $couponDiscount;
 
                             // Determine if same state (Tamil Nadu) for CGST/SGST or IGST
                             $shippingState = strtolower(trim($shippingAddress->state ?? ''));
@@ -330,9 +326,16 @@
                                 <p>Shipping</p>
                             </dd>
                             <dd class="col-6">
-                                <p class="text-end">FREE</p>
+                                <p class="text-end">
+                                    @if ($shipping_charge > 0)
+                                        ₹ {{ number_format($shipping_charge, 2) }}
+                                    @else
+                                        FREE
+                                    @endif
+                                </p>
                             </dd>
                         </dl>
+
 
                         <div class="final_cost">
                             <div class="row">

@@ -58,9 +58,9 @@ class PaymentController extends Controller
             $total_amount += ($lineSubtotal + $lineGst);
         }
 
-        $shipping_cost   = (float)$request->shipping_cost;
+        $shipping_charge = (float)$request->shipping_charge;
         $coupon_discount = (float)$request->coupon_discount;
-        $total_amount = ($total_amount + $shipping_cost) - $coupon_discount;
+        $total_amount = ($total_amount + $shipping_charge) - $coupon_discount;
         // dd($total_amount);
         $payment_method = $request->payment_method;
 
@@ -74,7 +74,7 @@ class PaymentController extends Controller
             $order->total_amount = $total_amount;
             $order->shipping_address = $shipping_address_id;
             $order->gst = $gst;
-            $order->shipping_cost = $shipping_cost;
+            $order->shipping_charge = $shipping_charge;
             $order->coupon_discount = $coupon_discount;
             $order->payment_order_id = $invoiceNumber;
             $order->coupon_id = session('coupon.id');
@@ -125,8 +125,9 @@ class PaymentController extends Controller
             $smsService->sendSms(auth()->user()->phone, $order->payment_order_id, 'order_confirmed');
 
             $pdf = PDF::loadView('frontend.product.invoice', $data)->setPaper('a4')->setOptions(['isRemoteEnabled' => true]);
+            // return $pdf->stream();
             
-            Mail::raw('New COD Order placed.', function ($message) use ($pdf) {
+            Mail::raw('New Order placed.', function ($message) use ($pdf) {
                 $message->to(auth()->user()->email)->subject('Invoice')->attachData($pdf->output(), 'invoice.pdf');
             });
 
@@ -179,7 +180,7 @@ class PaymentController extends Controller
                     'total_amount' => $total_amount,
                     'shipping_address' => $shipping_address_id,
                     'gst' => $gst,
-                    'shipping_cost' => $shipping_cost,
+                    'shipping_charge' => $shipping_charge,
                     'coupon_discount' => $coupon_discount,
                     'payment_order_id' => $invoiceNumber,
                     'razorpay_order_id' => $razorpayOrderId,
@@ -218,7 +219,7 @@ class PaymentController extends Controller
             $order->total_amount = $pendingData['total_amount'];
             $order->shipping_address = $pendingData['shipping_address'];
             $order->gst = $pendingData['gst'];
-            $order->shipping_cost = $pendingData['shipping_cost'];
+            $order->shipping_charge = $pendingData['shipping_charge'];
             $order->coupon_discount = $pendingData['coupon_discount'];
             $order->payment_order_id = $pendingData['payment_order_id'];
             $order->razorpay_order_id = $pendingData['razorpay_order_id'];
@@ -267,8 +268,8 @@ class PaymentController extends Controller
             // ✅ 4. Cleanup and Notifications
             session()->forget(['cart', 'coupon', 'razorpay_order_pending']);
 
-            Mail::raw('A new online order has been placed.', function ($message) {
-                $message->to('canntumemporium@gmail.com')->subject('Online Order Success');
+            Mail::raw('A new order has been placed.', function ($message) {
+                $message->to('canntumemporium@gmail.com')->subject('New Order Success');
             });
 
             $smsService->sendSms(auth()->user()->phone, $order->payment_order_id, 'order_confirmed');
@@ -296,6 +297,8 @@ class PaymentController extends Controller
             'order'            => $order,
             'order_details'    => $order_details,
             'total_gst'        => $order->gst,
+            'shipping_charge' => $order->shipping_charge,
+            'coupon_discount'  => $order->coupon_discount,
             'invoiceNumber'    => $order->payment_order_id,
         ];
 

@@ -390,6 +390,7 @@
                                                 <th>Order ID</th>
                                                 <th>Date</th>
                                                 <th>Product</th>
+                                                <th>Payment Method</th>
                                                 <th>Color</th>
                                                 <th>Size</th>
                                                 <th>Price (₹)</th>
@@ -417,15 +418,10 @@
 
                                                         $price = $firstDetail ? $firstDetail->offer_price : 0;
                                                         $originalPrice = $product ? $product->orginal_rate : 0;
-
-                                                        // ✅ Total Quantity across all items
+                                               
                                                         $totalQty = $orderDetails->sum('quantity');
 
-                                                        // ✅ CORRECT TOTAL CALCULATION from order_details table:
-                                                        // Formula: For each item → subtotal = offer_price × quantity
-                                                        //          gst_amount = subtotal × (product_gst / 100)
-                                                        //          item_total = subtotal + gst_amount
-                                                        // grandTotal = sum of all item_totals - coupon_discount
+                                                       
                                                         $grandTotal = 0;
                                                         foreach ($orderDetails as $detail) {
                                                             $itemSubtotal = $detail->offer_price * $detail->quantity;
@@ -433,9 +429,9 @@
                                                             $grandTotal += $itemSubtotal + $itemGst;
                                                         }
 
-                                                        // Subtract coupon discount if stored on the order
+                                                        $shippingCharge = $order->shipping_charge ?? 0;
                                                         $couponDiscount = $order->coupon_discount ?? 0;
-                                                        $grandTotal = $grandTotal - $couponDiscount;
+                                                        $grandTotal = $grandTotal  + $shippingCharge - $couponDiscount;
 
                                                         switch ($order->shipping_status) {
                                                             case 1:
@@ -514,7 +510,7 @@
                                                                 -
                                                             @endif
                                                         </td>
-
+                                                        <td>{{ strtoupper($order->payment_method) }}</td>
                                                         <td>
                                                             @if ($firstDetail && $firstDetail->color_id)
                                                                 @php $color = App\Models\Color::find($firstDetail->color_id); @endphp
@@ -538,7 +534,7 @@
                                                         </td>
 
                                                         <td>
-                                                            @if ($originalPrice > $price)
+                                                            @if ($originalPrice)
                                                                 <span class="fw-bold" style="color:#999;">
                                                                     ₹ {{ number_format($originalPrice, 0) }}
                                                                 </span>
@@ -549,12 +545,7 @@
 
                                                         <td>{{ $totalQty }}</td>
 
-                                                        {{--
-                                                            ✅ FIXED TOTAL COLUMN
-                                                            = (offer_price × quantity) + GST% - coupon_discount
-                                                            Data source: order_details.offer_price, order_details.product_gst,
-                                                                         order_details.quantity, orders.coupon_discount
-                                                        --}}
+                                                        
                                                         <td class="fw-bold">
                                                             ₹ {{ number_format($grandTotal, 0) }}
                                                         </td>

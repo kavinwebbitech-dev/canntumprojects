@@ -1,34 +1,3 @@
-{{-- <div class="top-header web-view">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-4">
-                <div class="top-header-left">
-                    <ul>
-                        <li><a href="{{ route('contact')}}" class="top-header-link">Contact Us </a></li>
-                        <li><a href="{{ route('join_us')}}" class="top-header-link">Join us </a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="top-header-right">
-                    <ul class="desc-link">
-                        <li><a class="top-header-link">Upto 30% discount on all the products!</a></li>
-                    </ul>
-
-
-                </div>
-            </div>
-            <!--<div class="col-md-2">-->
-            <!--    <ul class="social-icon">-->
-            <!--        <li><a href="https://www.youtube.com/@blendeofficial"><i class="fa-brands fa-youtube"></i></a></li>-->
-            <!--        <li><a href="https://www.instagram.com/myblendeofficial/"><i class="fa-brands fa-instagram"></i></a></li>-->
-            <!--        <li><a href="https://x.com/officialblende"><i class="fa-brands fa-x"></i></a></li>-->
-            <!--        <li><a href="https://www.linkedin.com/company/myblende"><i class="fa-brands fa-linkedin"></i></a></li>-->
-            <!--    </ul>-->
-            <!--</div>-->
-        </div>
-    </div>
-</div> --}}
 <style>
     .search-btn i {
         transition: transform 0.3s ease;
@@ -40,6 +9,30 @@
         /* border:none !important; */
         /* outline: none */
     }
+     @media (max-width: 768px) {
+    .mobile-header .login-list .icon {
+        position: relative;
+    }
+
+    .mobile-header .login-list .count {
+        top: -8px;
+        right: -8px;
+        font-size: 9px;
+        padding: 0px 5px;
+    }
+    @media (max-width: 575px) {
+    .mobile-header .login-list .icon {
+        position: relative;
+    }
+
+    .mobile-header .login-list .count {
+        top: -8px;
+        right: -8px;
+        font-size: 9px;
+        padding: 0px 5px;
+    }
+}
+     }
 </style>
 <div class="search-header">
     <div class="container">
@@ -176,7 +169,7 @@
                                     </div>
 
                                 </div>
-                                <img src="<?php echo url(''); ?>/assets/images/cart.svg" alt="">Cart
+                                <img src="<?php echo url(''); ?>/assets/images/cart.png" alt="">Cart
                             </a>
                         </li>
                     </ul>
@@ -211,8 +204,8 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link {{ request()->routeIs('category.list') && request()->route('id') == $category->id ? 'active' : '' }}"
                                     href="{{ route('category.list', ['id' => $category->id]) }}">
-                                    {{ $category->name }} <span class="dropdown-toggle" role="button"
-                                        data-bs-toggle="dropdown"></span>
+                                    {{ $category->name }}
+                                     {{-- <span class="dropdown-toggle" role="button" data-bs-toggle="dropdown"></span> --}}
                                 </a>
                                 @php $subcategories = App\Models\ProductSubCategory::where('category_id',$category->id)->get(); @endphp
                                 @if ($subcategories->count() > 0)
@@ -293,7 +286,7 @@
                                 </span>
 
                             </div>
-                            <img src="<?php echo url(''); ?>/assets/images/cart.svg" alt="">Cart
+                            <img src="<?php echo url(''); ?>/assets/images/cart.png" alt="">Cart
                         </a>
                     </li>
                 </ul>

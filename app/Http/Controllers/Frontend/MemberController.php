@@ -239,6 +239,7 @@ class MemberController extends Controller
         }
         $orders = $orders->orderBy('created_at', 'desc')->take(10)->get();
 
+        
         return view('frontend.user.order_history', compact('orders'));
     }
 
@@ -270,8 +271,10 @@ class MemberController extends Controller
         $totalSubtotal = $orders_details->sum(function ($item) {
             return $item->offer_price * $item->quantity;
         });
+        
+        $shipping_charge = $orders->shipping_charge ?? 0;
 
-        return view('frontend.user.order_details', compact('orders_details', 'orders', 'orderDetailsCount', 'shippingAddress', 'totalSubtotal'));
+        return view('frontend.user.order_details', compact('orders_details', 'orders', 'orderDetailsCount', 'shippingAddress', 'totalSubtotal', 'shipping_charge'));
     }
 
     public function addReview(Request $request)

@@ -30,6 +30,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <style>
+      .color-standed
+    {
+        width: 100%;
+        height: 100%;
+        min-height: 82px;
+        
+    }
     .amount_strike {
         text-decoration: line-through !important;
         font-size: 19px;
@@ -176,13 +183,14 @@
     /* Custom scrollbar styling */
     .product-desc-scroll::-webkit-scrollbar {
         width: 5px;
+        color: #bbbbbb !important;
     }
     .product-desc-scroll::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: #bbbbbb;
         border-radius: 4px;
     }
     .product-desc-scroll::-webkit-scrollbar-thumb {
-        background: #bbb;
+        background: #272727 !important;
         border-radius: 4px;
     }
     .product-desc-scroll::-webkit-scrollbar-thumb:hover {
@@ -203,6 +211,9 @@
         }
     }
  
+    .new-colr {
+        background-color: #272727 !important;
+    }
 .card_img img {
     width: 100%;
     height: 80px;
@@ -283,18 +294,32 @@
     border-top: 1px solid #eee;
     padding-top: 10px;
 }
+ul {
+        list-style-type: disc;
+}
+
+ol {
+        list-style-type: decimal;
+}
 </style>
 
+
 <section class="product_detail_inner">
+   
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                <li class="breadcrumb-item">
+                    <a href="{{ route('category.list', $product->category->id) }}">
+                        {{ $product->category->name }}
+                    </a>
+                </li>
                 <li class="breadcrumb-item active" aria-current="page">Product Details</li>
             </ol>
         </nav>
         <h1 class="product_title">Product Details</h1>
-        <div class="detail_divider mt-5">
+        <div class="detail_divider mt-1">
             <div class="row gy-4">
 
                 {{-- IMAGE GALLERY --}}
@@ -325,7 +350,7 @@
                                     </aside>
                                 </div>
                                <div class="col-lg-9 col-md-9 order-0 order-md-1">
-                                    <div class="big-img-container" style="position: relative;">
+                                    <div class="big-img-container " style="position: relative;">
                                         <div class="big-img img-zoom-container">
                                             <img id="myimage" src="{{ url('public/variant_images/' . $imagesToShow[0]) }}" style="width:100%; height:100%;">
                                             <div id="zoom-lens" class="img-zoom-lens"></div>
@@ -391,6 +416,7 @@
                             $variantColors = App\Models\ProductDetail::where('product_id', $product->id)
                                 ->whereNotNull('color_id')->distinct('color_id')->pluck('color_id');
                         @endphp
+                        
                         @if (count($variantColors) > 0)
                             <div class="mt-4">
                                 <h5 class="detail_subtitle">SELECT COLOR</h5>
@@ -398,15 +424,20 @@
                                     <div class="d-flex gap-2 flex-wrap">
                                         @php $colors = App\Models\Color::whereIn('id', $variantColors)->get(); @endphp
                                         @foreach ($colors as $color)
-                                <input type="radio" class="btn-check" name="color" id="color-{{ $color->id }}"
-                                    value="{{ $color->id }}"
-                                    @if ($colorId == $color->id || $colors->count() == 1) checked @endif>
-                                <label class="btn btn-outline-secondary @if ($colorId == $color->id || $colors->count() == 1) active @endif"
-                                    for="color-{{ $color->id }}">{{ $color->color }}</label>
-                            @endforeach
+                                            <input type="radio" class="btn-check" name="color" id="color-{{ $color->id }}"
+                                                value="{{ $color->id }}"
+                                                @if ($colorId == $color->id || $colors->count() == 1) checked @endif>
+                                            <label class="btn btn-outline-secondary @if ($colorId == $color->id || $colors->count() == 1) active @endif"
+                                                for="color-{{ $color->id }}">{{ $color->color }}</label>
+                                        @endforeach
                                     </div>
                                 </form>
                             </div>
+                           @else
+                            <div class="color-standed">
+
+                            </div>
+                          
                         @endif
 
                         {{-- SIZE SELECTION --}}
@@ -424,15 +455,26 @@
                                 <div class="d-flex gap-2 flex-wrap">
                                     @php $sizes = App\Models\Size::whereIn('id', $variantSizes)->get(); @endphp
                                     @foreach ($sizes as $size)
-                        <input type="radio" class="btn-check" name="size" id="size-{{ $size->id }}"
-                            value="{{ $size->id }}"
-                            @if ($sizeId == $size->id || $sizes->count() == 1) checked @endif>
-                        <label class="btn btn-outline-secondary @if ($sizeId == $size->id || $sizes->count() == 1) active @endif"
-                            for="size-{{ $size->id }}">{{ $size->name }}</label>
-                    @endforeach
+                                        <input type="radio" class="btn-check" name="size" id="size-{{ $size->id }}"
+                                            value="{{ $size->id }}"
+                                            @if ($sizeId == $size->id || $sizes->count() == 1) checked @endif>
+                                        <label class="btn btn-outline-secondary @if ($sizeId == $size->id || $sizes->count() == 1) active @endif"
+                                            for="size-{{ $size->id }}">{{ $size->name }}</label>
+                                    @endforeach
                                 </div>
                             </div>
+                            @else
+                            <div class="color-standed">
+
+                            </div>
                         @endif
+                        
+                        
+                            
+
+
+
+
 
                             @php
                                 // If user selected variant (color/size)
@@ -598,6 +640,9 @@
                        
                     </div>
                 </div>
+
+
+                
             </div><br>
             <div class="row mt-4 gap-2 gap-lg-0">
 
@@ -617,7 +662,7 @@
                             {{-- Fallback: Show the main product image if gallery is empty --}}
                             <img src="{{ url('public/product_images/' . $product->product_img) }}"
                                 id="productDetailSideImage1232" 
-                                style="object-fit: inherit; width: 100%; height: 400px !important">
+                                style="object-fit: inherit; width: 100%; height: 500px !important">
                         @endif
                     </div>
             </div>
@@ -635,7 +680,7 @@
                             </h2>
 
                             <div id="collapseOne" class="accordion-collapse collapse show">
-                                <div class="accordion-body" style="max-height: 350px; overflow-y: auto;">
+                                <div class="accordion-body" style="max-height: 448px; overflow-y: auto;">
                                     {!! $product->description !!}
                                 </div>
                             </div>
@@ -1007,6 +1052,80 @@ $(document).ready(function () {
                     imageZoom("myimage", "myresult");
                 };
   });
+
+document.addEventListener("DOMContentLoaded", initGallery);
+window.addEventListener("resize", debounce(initGallery, 300));
+
+function initGallery() {
+
+    const isMobile = window.innerWidth < 768;
+    let img = document.getElementById("myimage");
+
+    // 🧹 CLEAN PREVIOUS STATE
+    document.getElementById("zoom-lens")?.remove();
+    document.getElementById("myresult")?.remove();
+
+    const zoomContainer = document.querySelector(".img-zoom-container");
+    if (zoomContainer) {
+        zoomContainer.classList.remove("img-zoom-container");
+    }
+
+    // remove old image listeners by cloning
+    if (img) {
+        const newImg = img.cloneNode(true);
+        img.parentNode.replaceChild(newImg, img);
+        img = newImg;
+    }
+
+    // 📱 MOBILE MODE
+    if (isMobile) {
+        // nothing else → clean scroll works
+    }
+
+    // 💻 DESKTOP MODE
+    else {
+        // recreate zoom elements
+        const container = document.querySelector(".big-img");
+        if (container && img) {
+
+            container.classList.add("img-zoom-container");
+
+            const lens = document.createElement("div");
+            lens.id = "zoom-lens";
+            lens.className = "img-zoom-lens";
+
+            const result = document.createElement("div");
+            result.id = "myresult";
+            result.className = "img-zoom-result";
+
+            container.appendChild(lens);
+            container.parentElement.appendChild(result);
+
+            if (typeof imageZoom === "function") {
+                imageZoom("myimage", "myresult");
+            }
+        }
+    }
+
+    // 🖼️ THUMBNAIL CLICK (RE-ATTACH SAFE)
+    document.querySelectorAll(".thumbnail").forEach(el => {
+        el.onclick = function () {
+            const src = this.getAttribute("data-big");
+            if (img && src) img.src = src;
+        };
+    });
+}
+
+// ⚡ debounce to prevent lag on resize
+function debounce(func, delay) {
+    let timer;
+    return function () {
+        clearTimeout(timer);
+        timer = setTimeout(func, delay);
+    };
+}
+
+
   </script>
 
 @endsection

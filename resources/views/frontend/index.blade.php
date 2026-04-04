@@ -91,6 +91,17 @@
             font-size: 12px;
             padding: 5px 10px;
         }
+        .coll-6 {
+            padding: 0 5px; 
+        }
+        .pado {
+            padding: 0 ; 
+            width: auto !important;
+        }
+        .pri {
+            padding: 0 6px; 
+            width: auto !important;
+        }
     </style>
 
     <section class="banner">
@@ -154,7 +165,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-6">
                                                 @if ($product_price)
-                                                    <div class="col-6">
+                                                    <div class="col-6 coll-6">
                                                         @php
                                                             $FirstProductDiscountedPrice =
                                                                 $product_price->price -
@@ -162,7 +173,7 @@
                                                         @endphp
                                                         <div class="card_text">
                                                             <div class="row align-items-center">
-                                                                <div class="col-auto">
+                                                                <div class="col-auto pri">
                                                                     <span class="price">
                                                                         Rs. {{ round($FirstProductDiscountedPrice) }}
                                                                         @if ($value->discount)
@@ -173,7 +184,7 @@
                                                                     </span>
                                                                 </div>
                                                                 @if ($value->discount)
-                                                                    <div class="col-auto">
+                                                                    <div class="col-auto pado">
                                                                         <span
                                                                             class="offer_text">{{ round($value->discount) }}%
                                                                             Off</span>
@@ -242,7 +253,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-6">
                                             @if ($product_price)
-                                                <div class="col-6">
+                                                <div class="col-6 coll-6">
                                                     @php
                                                         $FirstProductDiscountedPrice =
                                                             $product_price->price -
@@ -250,7 +261,7 @@
                                                     @endphp
                                                     <div class="card_text">
                                                         <div class="row align-items-center">
-                                                            <div class="col-auto">
+                                                            <div class="col-auto pri">
                                                                 <span class="price">
                                                                     Rs. {{ round($FirstProductDiscountedPrice) }}
                                                                     @if ($value->discount)
@@ -261,7 +272,7 @@
                                                                 </span>
                                                             </div>
                                                             @if ($value->discount)
-                                                                <div class="col-auto">
+                                                                <div class="col-auto pado">
                                                                     <span class="offer_text">{{ round($value->discount) }}%
                                                                         Off</span>
                                                                 </div>
@@ -364,8 +375,8 @@
                                                             @endphp
                                                             <div class="card_text">
                                                                 <div class="row align-items-center">
-                                                                    <div class="col-auto">
-                                                                        <span class="price">
+                                                                    <div class="col-auto pri">
+                                                                        <span class="price" style="padding-left: 3px;">
                                                                             Rs. {{ round($price) }}
                                                                             @if ($product_price && $value->discount)
                                                                                 <span
@@ -375,7 +386,7 @@
                                                                         </span>
                                                                     </div>
                                                                     @if ($value->discount)
-                                                                        <div class="col-auto">
+                                                                        <div class="col-auto pado">
                                                                             <span
                                                                                 class="offer_text">{{ round($value->discount) }}%
                                                                             </span>
@@ -448,8 +459,8 @@
                                                             @endphp
                                                             <div class="card_text">
                                                                 <div class="row align-items-center">
-                                                                    <div class="col-auto">
-                                                                        <span class="price">
+                                                                    <div class="col-auto pri">
+                                                                        <span class="price" style="padding-left: 3px;">
                                                                             Rs. {{ round($price) }}
                                                                             @if ($product_price && $value->discount)
                                                                                 <span
@@ -459,7 +470,7 @@
                                                                         </span>
                                                                     </div>
                                                                     @if ($value->discount)
-                                                                        <div class="col-auto">
+                                                                        <div class="col-auto pado">
                                                                             <span
                                                                                 class="offer_text">{{ round($value->discount) }}%
                                                                             </span>
@@ -496,7 +507,7 @@
                                 <div class="owl-carousel product-slider1">
                                     @php
                                         $product_unique_img = App\Models\Product::where('deleted', 0)
-                                            ->where('trending_this_week', 1)
+                                            ->where('trending_tshirt', 1)
                                             ->where('status', 1)
                                             ->latest()
                                             ->get();
@@ -532,8 +543,8 @@
                                                             @endphp
                                                             <div class="card_text">
                                                                 <div class="row align-items-center">
-                                                                    <div class="col-auto">
-                                                                        <span class="price">
+                                                                    <div class="col-auto pri">
+                                                                        <span class="price" style="padding-left: 3px;">
                                                                             Rs. {{ round($price) }}
                                                                             @if ($product_price && $value->discount)
                                                                                 <span
@@ -543,7 +554,7 @@
                                                                         </span>
                                                                     </div>
                                                                     @if ($value->discount)
-                                                                        <div class="col-auto">
+                                                                        <div class="col-auto pado">
                                                                             <span
                                                                                 class="offer_text">{{ round($value->discount) }}%
                                                                             </span>
@@ -647,8 +658,8 @@
                                                 @endphp
                                                 <div class="card_text">
                                                     <div class="row align-items-center">
-                                                        <div class="col-auto">
-                                                            <span class="price">
+                                                        <div class="col-auto pri">
+                                                            <span class="price" style="padding-left: 3px;">
                                                                 Rs. {{ round($price) }}
                                                                 @if ($product_price && $value->discount)
                                                                     <span
@@ -657,7 +668,7 @@
                                                             </span>
                                                         </div>
                                                         @if ($value->discount)
-                                                            <div class="col-auto">
+                                                            <div class="col-auto pado ">
                                                                 <span class="offer_text">{{ round($value->discount) }}%
                                                                     Off</span>
                                                             </div>

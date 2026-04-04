@@ -17,11 +17,17 @@
             border-collapse: collapse;
         }
 
+        .no-gap-row .rrow {
+            padding: 0 !important;
+            text-align: c
+        }
+
         th,
         td {
             border: 1px solid #001E40;
             padding: 6px;
             font-size: 12px;
+
         }
 
         .header-title {
@@ -30,6 +36,7 @@
 
         .sub-title {
             font-weight: bold;
+            text-align: center;
         }
 
         .right {
@@ -129,32 +136,36 @@
 
             </td>
         </tr> --}}
-        <tr>
-            <td width="50%" valign="top" style="padding-bottom: 10px;">
-                <div style="border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 5px;">
-                    <span class="sub-title" style="font-weight: bold;">Shipping Details</span>
+        <tr class="no-gap-row">
+            <td class="rrow" width="50%" valign="top" style="padding-bottom: 10px;">
+                <div style="border-bottom: 1px solid #000; margin-bottom: 10px;  padding-bottom: 5px;">
+                    <span class="sub-title" style="font-weight: bold; margin-left: 33%;">Shipping Details</span>
                 </div>
 
-                <strong>{{ $shipping_address->shipping_name ?? 'N/A' }}</strong><br>
-                {{ $shipping_address->shipping_address ?? '' }}<br>
-                {{ $shipping_address->city ?? '' }},
-                {{ $shipping_address->state ?? '' }} -
-                {{ $shipping_address->pincode ?? '' }}<br>
+                <div style="margin: 0 0 10px 10px ;">
+                    <strong>{{ $shipping_address->shipping_name ?? 'N/A' }}</strong><br>
+                    {{ $shipping_address->shipping_address ?? '' }}<br>
+                    {{ $shipping_address->city ?? '' }},
+                    {{ $shipping_address->state ?? '' }} -
+                    {{ $shipping_address->pincode ?? '' }}<br>
 
-                Phone: {{ $shipping_address->shipping_phone ?? '' }}<br>
-                Email: {{ $shipping_address->shipping_email ?? '' }}
+                    Phone: {{ $shipping_address->shipping_phone ?? '' }}<br>
+                    Email: {{ $shipping_address->shipping_email ?? '' }}
+                </div>
             </td>
 
-            <td width="50%" valign="top" style="padding-bottom: 10px;">
+            <td class="rrow" width="50%" valign="top" style="padding-bottom: 10px;">
                 <div style="border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 5px;">
-                    <span class="sub-title" style="font-weight: bold;">Invoice Details</span>
+                    <span class="sub-title" style="font-weight: bold; margin-left: 33%;">Invoice Details</span>
                 </div>
 
-                Invoice No : <strong>{{ $invoiceNumber }}</strong><br>
-                Invoice Date : {{ date('d-m-Y', strtotime($order->created_at)) }}<br>
-                Payment Mode : {{ strtoupper($order->payment_method) }}<br>
-                Place of Supply : {{ $shipping_address->state ?? '' }}<br>
-                State Code : {{ $shipping_address->state_code ?? '' }}
+                <div style="margin: 0 0 10px 10px ;">
+                    Invoice No : <strong>{{ $invoiceNumber }}</strong><br>
+                    Invoice Date : {{ date('d-m-Y', strtotime($order->created_at)) }}<br>
+                    Payment Mode : {{ strtoupper($order->payment_method) }}<br>
+                    Place of Supply : {{ $shipping_address->state ?? '' }}<br>
+                    State Code : {{ $shipping_address->state_code ?? '' }}
+                </div>
             </td>
         </tr>
     </table>
@@ -240,7 +251,8 @@
     @php
         $coupon = (float) str_replace(',', '', $order->coupon_discount ?? 0);
         $totalTax = $isTamilNadu ? $totalCGST + $totalSGST : $totalIGST;
-        $grandTotal = $subTotal + $totalTax - $coupon;
+        $shippingCharge = (float) ($order->shipping_charge ?? 0);
+        $grandTotal = $subTotal + $totalTax + $shippingCharge - $coupon;
     @endphp
 
     <table width="45%" align="right">
@@ -249,7 +261,7 @@
             <td class="right">₹ {{ number_format($subTotal, 2) }}</td>
         </tr>
 
-        @if ($isTamilNadu)
+        {{-- @if ($isTamilNadu)
             <tr>
                 <td>Total CGST</td>
                 <td class="right">₹ {{ number_format($totalCGST, 2) }}</td>
@@ -263,13 +275,22 @@
                 <td>Total IGST</td>
                 <td class="right">₹ {{ number_format($totalIGST, 2) }}</td>
             </tr>
-        @endif
+        @endif --}}
 
         <tr>
             <td>Coupon Discount (-)</td>
             <td class="right">₹ {{ number_format($coupon, 2) }}</td>
         </tr>
-
+        <tr>
+            <td>Shipping Charge</td>
+            <td class="right">
+                @if ($shippingCharge > 0)
+                    ₹ {{ number_format($shippingCharge, 2) }}
+                @else
+                    FREE
+                @endif
+            </td>
+        </tr>
         <tr class="total-box">
             <td>Grand Total</td>
             <td class="right">₹ {{ number_format($grandTotal, 2) }}</td>
@@ -277,7 +298,7 @@
     </table>
     <br>
 
-    <table style="margin-top:0px;">
+    <table style="margin-top:0px; position :relative; top: 75px; bottom: auto;">
         <tr>
             <td colspan="2" style="font-weight:500; background:#f5f5f5;">
                 Terms & Conditions

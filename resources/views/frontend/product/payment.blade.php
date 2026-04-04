@@ -54,7 +54,7 @@
                 @csrf
                 <input type="hidden" name="shipping_address" value="{{ $address }}">
                 <input type="hidden" name="total_amount" value="{{ $amount }}">
-                <input type="hidden" name="shipping_cost" value="{{ $shipping_cost }}">
+                <input type="hidden" name="shipping_charge" value="{{ $shippingCharge }}">
                 <input type="hidden" name="gst" value="{{ $gst }}">
                 <input type="hidden" name="coupon_discount" value="{{ $coupon_discount }}">
             </form>

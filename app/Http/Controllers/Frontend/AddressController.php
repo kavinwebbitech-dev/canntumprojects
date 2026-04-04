@@ -139,11 +139,11 @@ class AddressController extends Controller
         }
 
         $amount          = $request->total_amount;
-        $shipping_cost   = $request->shipping_cost;
+        $shippingCharge  = $request->shipping_charge;
         $gst             = $request->gst;
         $coupon_discount = $request->coupon_discount;
 
 
-        return view('frontend.product.payment', compact('amount', 'address', 'shipping_cost', 'gst', 'coupon_discount'));
+        return view('frontend.product.payment', compact('amount', 'address', 'shippingCharge', 'gst', 'coupon_discount'));
     }
 }

@@ -16,6 +16,7 @@ use App\Models\ProductCategory;
 use App\Models\ProductSubCategory;
 use App\Models\Color;
 use App\Models\State;
+use App\Models\ShippingCharge;
 use App\Models\Size;
 use App\Models\Product;
 use App\Models\ProductDetail;
@@ -383,7 +384,11 @@ class HomeController extends Controller
 
     public function productDetails($id, Request $request)
     {
-        $product = Product::where('deleted', 0)->findOrFail($id);
+        $product = Product::with('category')
+            ->where('deleted', 0)
+            ->findOrFail($id);
+
+        $cat_id = $product->category_id;
 
         // Fetch Reviews for this specific product
         $reviews = \App\Models\Review::where('product_id', $id)
@@ -430,8 +435,8 @@ class HomeController extends Controller
                 ->whereNull('size_id')
                 ->first();
         }
-
         return view('frontend.product.details', compact(
+            'cat_id',
             'product',
             'galleryImages',
             'productDetail',
@@ -569,7 +574,7 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Product added to wishlist successfully!');
     }
 
-    
+
 
     public function addToCartBuyOld($id)
     {
@@ -740,32 +745,7 @@ class HomeController extends Controller
     }
 
 
-    // public function applyCoupon(Request $request)
-    // {
-    //     dd($request);
-    //     $request->validate([
-    //         'coupon_code' => 'required|string'
-    //     ]);
 
-    //     $coupon = Coupon::where('code', $request->coupon_code)
-    //         ->where('status', 1) // active coupon
-    //         ->where(function ($q) {
-    //             $q->whereNull('expires_at')
-    //                 ->orWhere('expires_at', '>=', now());
-    //         })
-    //         ->first();
-
-    //     if (!$coupon) {
-    //         return back()->with('error', 'Invalid or expired coupon!');
-    //     }
-
-    //     session()->put('coupon', [
-    //         'code' => $coupon->code,
-    //         'percentage' => $coupon->percentage
-    //     ]);
-
-    //     return back()->with('success', 'Coupon applied successfully!');
-    // }
     public function applyCoupon(Request $request)
     {
         if (!auth()->check()) {
@@ -809,39 +789,6 @@ class HomeController extends Controller
     }
 
 
-
-
-
-
-    // public function proceed_to_checkout(Request $request)
-    // {
-    //     $products = Product::all();
-    //     $countries = Country::all();
-    //     $userAddress = \App\Models\Address::where('user_id', auth()->user()->id)->get();
-    //     $states = State::orderBy('name')->get();
-
-    //     $cart = $request->session()->get('cart', []);
-
-    //     $total_gst = 0;
-
-    //     foreach ($cart as $product) {
-
-    //         $price = $product['offer_price'] - ($product['offer_price'] * ($product['discount'] / 100));
-
-    //         $gst_amount = ($price * $product['gst']) / 100;
-
-    //         $total_gst += $gst_amount * $product['quantity'];
-    //     }
-
-
-
-    //     // print_r("Total GST: " . number_format($total_gst, 2)); exit();
-
-    //     $coupon = session()->get('coupon', null);
-    //     // dd($total_gst);
-
-    //     return view('frontend.product.checkout', compact('products', 'userAddress', 'countries', 'total_gst', 'coupon', 'states'));
-    // }
     public function proceed_to_checkout(Request $request)
     {
         $products = Product::all();
@@ -867,6 +814,17 @@ class HomeController extends Controller
             $total_gst += $gst_amount * $qty;
         }
 
+        // ✅ SHIPPING LOGIC
+        $shipping = ShippingCharge::where('status', 1)
+            ->where('min_amount', '<=', $subtotal)
+            ->where(function ($q) use ($subtotal) {
+                $q->where('max_amount', '>=', $subtotal)
+                    ->orWhereNull('max_amount');
+            })
+            ->first();
+
+        $shipping_charge = $shipping->charge ?? 0;
+
         $coupon = session()->get('coupon', null);
 
         return view(
@@ -878,7 +836,8 @@ class HomeController extends Controller
                 'states',
                 'subtotal',
                 'total_gst',
-                'coupon'
+                'coupon',
+                'shipping_charge'
             )
         );
     }

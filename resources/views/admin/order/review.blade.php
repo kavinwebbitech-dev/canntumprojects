@@ -18,11 +18,13 @@
     </style>
 
 
-
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="card-title">Reviews List</h4>
 
-
+        <!-- ✅ ADD REVIEW BUTTON -->
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+            Add Review
+        </button>
     </div>
 
 
@@ -55,7 +57,8 @@
 
     <div class="card-body">
         <div class="table-responsive" style="overflow-x:scroll;">
-            <table id="" class="export-table display table table-bordered verticle-middle table-striped table-responsive-sm"
+            <table id=""
+                class="export-table display table table-bordered verticle-middle table-striped table-responsive-sm"
                 style="min-width: 845px">
                 <thead class="thead-success">
                     <tr>
@@ -87,14 +90,10 @@
                             <td>
                                 <div class="d-flex gap-2">
                                     <!-- View Button (opens modal) -->
-                                    <button type="button" 
-                                            class="btn btn-info btn-sm review-view-btn"
-                                            data-id="{{ $item->id }}"
-                                            data-user="{{ $user->name ?? 'Unknown User' }}"
-                                            data-review="{{ $item->command }}"
-                                            data-stars="{{ $item->star_count }}"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#reviewModal">
+                                    <button type="button" class="btn btn-info btn-sm review-view-btn"
+                                        data-id="{{ $item->id }}" data-user="{{ $user->name ?? 'Unknown User' }}"
+                                        data-review="{{ $item->command }}" data-stars="{{ $item->star_count }}"
+                                        data-bs-toggle="modal" data-bs-target="#reviewModal">
                                         <i class="fas fa-eye"></i> View
                                     </button>
                                 </div>
@@ -103,6 +102,77 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+    </div>
+    <!-- ✅ Add Review Modal -->
+    <div class="modal fade" id="addReviewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form method="POST" action="{{ route('admin.reviews.store') }}">
+                    @csrf
+
+                    <div class="modal-body">
+
+                        <!-- ✅ USER DROPDOWN -->
+                        <div class="mb-3">
+                            <label>User</label>
+                            <select name="user_id" class="form-control" required>
+                                <option value="">Select User</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- ✅ PRODUCT DROPDOWN -->
+                        <div class="mb-3">
+                            <label>Product</label>
+                            <select name="product_id" class="form-control">
+                                <option value="">Select Product</option>
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->product_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- ✅ ORDER DROPDOWN -->
+                        <div class="mb-3">
+                            <label>Order</label>
+                            <select name="order_id" class="form-control">
+                                <option value="">Select Order</option>
+                                @foreach ($orders as $order)
+                                    <option value="{{ $order->id }}">
+                                        Order #{{ $order->id }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- REVIEW -->
+                        <div class="mb-3">
+                            <label>Review</label>
+                            <textarea name="command" class="form-control" required></textarea>
+                        </div>
+
+                        <!-- STARS -->
+                        <div class="mb-3">
+                            <label>Stars</label>
+                            <input type="number" name="star_count" class="form-control" min="1" max="5"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Save Review</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <!-- Review Modal -->

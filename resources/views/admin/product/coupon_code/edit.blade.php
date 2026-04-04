@@ -47,7 +47,7 @@
                 <div id="profile-settings" class="tab-pane fade active show">
                     <div class="pt-3">
                         <div class="settings-form">
-                            <form method="POST" action="{{ route('admin.product.coupon_code.update') }}"
+                            <form method="POST" action="{{ route('admin.coupon_code.update') }}"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="coupon_id" class="form-control" value="{{ $coupon_code->id }}">

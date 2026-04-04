@@ -36,9 +36,18 @@
             padding-right: 8px;
         }
 
-        .scroll-desc::-webkit-scrollbar { width: 6px; }
-        .scroll-desc::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 10px; }
-        .scroll-desc::-webkit-scrollbar-track { background: #f1f1f1; }
+        .scroll-desc::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll-desc::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
+        }
+
+        .scroll-desc::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
 
         .offer_text {
             background: #f7ece6;
@@ -80,12 +89,28 @@
         .empty-wishlist i {
             font-size: 64px;
             color: #ddd;
-            margin-bottom: 16px;
+            /* margin-bottom: 1rem; */
             display: block;
         }
 
-        .empty-wishlist h4 { color: #555; margin-bottom: 8px; }
-        .empty-wishlist p  { color: #999; margin-bottom: 24px; }
+        .butto {
+            border: 1px solid #333;
+            padding: 10px 28px;
+            font-size: 15px;
+            color: #333;
+            border-radius: 2px;
+        }
+        
+
+        .empty-wishlist h4 {
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .empty-wishlist p {
+            color: #999;
+            margin-bottom: 24px;
+        }
     </style>
 
     <section class="inner_pages">
@@ -106,7 +131,7 @@
                             <div class="row gy-4">
                                 @foreach (session('wishlist') as $id => $details)
                                     @php
-                                        $product         = App\Models\Product::find($id);
+                                        $product = App\Models\Product::find($id);
                                         $product_details = App\Models\ProductDetail::where('product_id', $id)->first();
                                     @endphp
 
@@ -139,7 +164,8 @@
                                                             <p class="mb-0">
                                                                 Rs. {{ $product_details->price }}
                                                                 @if ($product->discount)
-                                                                    <span class="offer_text ms-1">{{ round($product->discount) }}%</span>
+                                                                    <span
+                                                                        class="offer_text ms-1">{{ round($product->discount) }}%</span>
                                                                 @endif
                                                             </p>
                                                             <a href="{{ route('product.details.show', $product->id) }}"
@@ -159,7 +185,8 @@
                                                                         Product Detail
                                                                     </button>
                                                                 </h2>
-                                                                <div id="desc{{ $id }}" class="accordion-collapse collapse">
+                                                                <div id="desc{{ $id }}"
+                                                                    class="accordion-collapse collapse">
                                                                     <div class="accordion-body scroll-desc text-sm">
                                                                         {!! $product->description !!}
                                                                     </div>
@@ -177,14 +204,14 @@
                     </div>
                 </div>
             </div>
-
         @else
             <div class="container">
                 <div class="empty-wishlist">
                     <i class="bi bi-heart"></i>
-                    <h4>Your wishlist is empty</h4>
+                    <h4 style="font-weight: 500; color: #444;">Your wishlist is empty</h4>
                     <p>You haven't added any products to your wishlist yet.</p>
-                    <a href="{{ route('home') }}" class="btn" style="border: 1px solid #001E40;  color: #001E40 !important;">Continue Shopping</a>
+                    <a href="{{ route('home') }}" class="btn butto"
+                        style="border: 1px solid #001E40;  color: #001E40 !important;">Continue Shopping</a>
                 </div>
             </div>
         @endif
@@ -192,31 +219,43 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('.move-to-cart').click(function (e) {
+        $(document).ready(function() {
+            $('.move-to-cart').click(function(e) {
                 e.preventDefault();
                 var productId = $(this).data('id');
                 $.ajax({
                     url: '{{ route('wishlist.moveToCart') }}',
                     method: 'POST',
-                    data: { _token: '{{ csrf_token() }}', product_id: productId },
-                    success: function (response) {
-                        if (response.status === 'success') { location.reload(); }
-                        else { alert(response.message); }
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        product_id: productId
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
                     }
                 });
             });
 
-            $('.remove-item-wishlist').click(function (e) {
+            $('.remove-item-wishlist').click(function(e) {
                 e.preventDefault();
                 var productId = $(this).data('id');
                 $.ajax({
                     url: '{{ route('wishlist.remove') }}',
                     method: 'POST',
-                    data: { _token: '{{ csrf_token() }}', product_id: productId },
-                    success: function (response) {
-                        if (response.status === 'success') { location.reload(); }
-                        else { alert(response.message); }
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        product_id: productId
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
                     }
                 });
             });

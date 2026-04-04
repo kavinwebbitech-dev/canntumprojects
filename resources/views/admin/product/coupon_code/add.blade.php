@@ -26,7 +26,7 @@
                 <div id="profile-settings" class="tab-pane fade active show">
                     <div class="pt-3">
                         <div class="settings-form">
-                            <form method="POST" action="{{ route('admin.product.coupon_code.store') }}"
+                            <form method="POST" action="{{ route('admin.coupon_code.store') }}"
                                 enctype="multipart/form-data">
                                 @csrf
 

@@ -50,17 +50,17 @@ html {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #666;
+    background: #ccc;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: #272727;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #ccc;
+    background: #272727;
 }
 
 .btn:focus {
@@ -1941,7 +1941,7 @@ textarea:focus {
 }
 
 .product_list {
-    padding: 60px 0px;
+    padding: 25px 0px;
 }
 
 .breadcrumb-item a,
@@ -2092,7 +2092,7 @@ textarea:focus {
 }
 
 .product_detail_inner {
-    padding: 50px 0px;
+    padding: 25px 0px;
 }
 
 .product_detail_inner .product_title {
@@ -2518,7 +2518,7 @@ textarea:focus {
 }
 
 .inner_pages {
-    padding: 50px 0px;
+    padding: 25px 0px;
 }
 
 .inner_pages .page_title {

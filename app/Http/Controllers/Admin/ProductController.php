@@ -318,158 +318,157 @@ class ProductController extends Controller
     //         ]);
     //     }
     // }
-   
 
-public function productStore(Request $request)
-{
-    // ========================
-    // ✅ VALIDATION WITH FIELD NAMES
-    // ========================
-    $request->validate([
-        'category_id'    => 'required|integer|exists:product_categories,id',
-        'product_name'   => 'required|string|max:255',
-        'actual_price'   => 'required|numeric|min:0',
-        'offer_price'    => 'required|numeric|min:0|lte:actual_price',
-        'discount'       => 'nullable|numeric|min:0|max:100',
-        'gst'            => 'nullable|numeric|min:0|max:100',
-        'description'    => 'nullable|string',
 
-        // ✅ VARIANTS REQUIRED
-        // 'variants' => 'required|array|min:1',
-        // 'variants.*.color_id' => 'required|exists:colors,id',
-        // 'variants.*.size_id'  => 'required|exists:sizes,id',
-        'variants.*.quantity' => 'required|integer|min:0',
-
-        'file1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-        'gallery_images' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-    ], [
-        // ✅ CUSTOM ERROR MESSAGES
-        'category_id.required' => 'Category is required',
-        'product_name.required' => 'Product name is required',
-        'actual_price.required' => 'Actual price is required',
-        'offer_price.required' => 'Offer price is required',
-
-        'variants.required' => 'At least one variant is required',
-
-        // 'variants.*.color_id.required' => 'Color is required',
-        // 'variants.*.size_id.required'  => 'Size is required',
-        'variants.*.quantity.required' => 'Quantity is required',
-
-        'variants.*.quantity.integer' => 'Quantity must be number',
-    ]);
-
-    try {
-
-        DB::beginTransaction(); // 🔥 TRANSACTION START
-
-        date_default_timezone_set('Asia/Kolkata');
-
+    public function productStore(Request $request)
+    {
         // ========================
-        // 1. CREATE PRODUCT
+        // ✅ VALIDATION WITH FIELD NAMES
         // ========================
-        $product = new Product();
-        $product->category_id = $request->category_id;
-        $product->subcategory = $request->subcategory;
-        $product->product_name = $request->product_name;
-        $product->orginal_rate = $request->actual_price;
-        $product->offer_price  = $request->offer_price;
-        $product->description  = $request->description;
-        $product->discount     = $request->discount;
-        $product->gst          = $request->gst;
-        $product->quantity     = 0;
+        $request->validate([
+            'category_id'    => 'required|integer|exists:product_categories,id',
+            'product_name'   => 'required|string|max:255',
+            'actual_price'   => 'required|numeric|min:0',
+            'offer_price'    => 'required|numeric|min:0|lte:actual_price',
+            'discount'       => 'nullable|numeric|min:0|max:100',
+            'gst'            => 'nullable|numeric|min:0|max:100',
+            'description'    => 'nullable|string',
 
-        $product->best_sellers    = $request->has('best_sellers') ? 1 : 0;
-        $product->new_arrival     = $request->has('new_arrival') ? 1 : 0;
-        $product->trending_tshirt = $request->has('trending_tshirt') ? 1 : 0;
-        $product->trending_this_week = $request->has('trending_this_week') ? 1 : 0;
+            // ✅ VARIANTS REQUIRED
+            // 'variants' => 'required|array|min:1',
+            // 'variants.*.color_id' => 'required|exists:colors,id',
+            // 'variants.*.size_id'  => 'required|exists:sizes,id',
+            'variants.*.quantity' => 'required|integer|min:0',
 
-        // ========================
-        // 2. MAIN IMAGE
-        // ========================
-        if ($request->hasFile('file1')) {
-            $file = $request->file('file1');
-            $fileName = date('YmdHis') . '_' . uniqid() . '.' . $file->extension();
-            $file->move(public_path('product_images'), $fileName);
-            $product->product_img = $fileName;
-        }
+            'file1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'gallery_images' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ], [
+            // ✅ CUSTOM ERROR MESSAGES
+            'category_id.required' => 'Category is required',
+            'product_name.required' => 'Product name is required',
+            'actual_price.required' => 'Actual price is required',
+            'offer_price.required' => 'Offer price is required',
 
-        $product->save();
+            'variants.required' => 'At least one variant is required',
 
-        // ========================
-        // 3. PRODUCT GALLERY
-        // ========================
-        if ($request->hasFile('file2')) {
-            foreach ($request->file('file2') as $image) {
-                $imageName = time() . '_' . uniqid() . '.' . $image->extension();
-                $image->move(public_path('product_images'), $imageName);
+            // 'variants.*.color_id.required' => 'Color is required',
+            // 'variants.*.size_id.required'  => 'Size is required',
+            'variants.*.quantity.required' => 'Quantity is required',
 
-                Upload::create([
-                    'name' => $imageName,
-                    'path' => 'product_images/' . $imageName,
-                    'product_id' => $product->id
-                ]);
-            }
-        }
+            'variants.*.quantity.integer' => 'Quantity must be number',
+        ]);
 
-        $gallery_file_name = null;
-        if ($request->hasFile('gallery_images')) {
-            $gFile = $request->file('gallery_images');
-            $gallery_file_name = date('YmdHis') . '_' . uniqid() . '.' . $gFile->extension();
-            $gFile->move(public_path('gallery_images'), $gallery_file_name);
-        }
+        try {
 
-        // ========================
-        // 4. VARIANTS SAVE 🔥
-        // ========================
-        foreach ($request->variants as $index => $variant) {
+            DB::beginTransaction(); // 🔥 TRANSACTION START
 
-            // ✅ EXTRA SAFETY (WILL TRIGGER ROLLBACK)
-            if (
-                // empty($variant['color_id']) ||
-                // empty($variant['size_id']) ||
-                !isset($variant['quantity'])
-            ) {
-                throw new \Exception("Variant data missing at row " . ($index + 1));
+            date_default_timezone_set('Asia/Kolkata');
+
+            // ========================
+            // 1. CREATE PRODUCT
+            // ========================
+            $product = new Product();
+            $product->category_id = $request->category_id;
+            $product->subcategory = $request->subcategory;
+            $product->product_name = $request->product_name;
+            $product->orginal_rate = $request->actual_price;
+            $product->offer_price  = $request->offer_price;
+            $product->description  = $request->description;
+            $product->discount     = $request->discount;
+            $product->gst          = $request->gst;
+            $product->quantity     = 0;
+
+            $product->best_sellers    = $request->has('best_sellers') ? 1 : 0;
+            $product->new_arrival     = $request->has('new_arrival') ? 1 : 0;
+            $product->trending_tshirt = $request->has('trending_tshirt') ? 1 : 0;
+            $product->trending_this_week = $request->has('trending_this_week') ? 1 : 0;
+
+            // ========================
+            // 2. MAIN IMAGE
+            // ========================
+            if ($request->hasFile('file1')) {
+                $file = $request->file('file1');
+                $fileName = date('YmdHis') . '_' . uniqid() . '.' . $file->extension();
+                $file->move(public_path('product_images'), $fileName);
+                $product->product_img = $fileName;
             }
 
-            $variant_images = [];
+            $product->save();
 
-            // ===== VARIANT IMAGES =====
-            if ($request->hasFile("variants.{$index}.images")) {
-                foreach ($request->file("variants.{$index}.images") as $img) {
-                    $imgName = date('YmdHis') . '_' . uniqid() . '.' . $img->extension();
-                    $img->move(public_path('variant_images'), $imgName);
-                    $variant_images[] = $imgName;
+            // ========================
+            // 3. PRODUCT GALLERY
+            // ========================
+            if ($request->hasFile('file2')) {
+                foreach ($request->file('file2') as $image) {
+                    $imageName = time() . '_' . uniqid() . '.' . $image->extension();
+                    $image->move(public_path('product_images'), $imageName);
+
+                    Upload::create([
+                        'name' => $imageName,
+                        'path' => 'product_images/' . $imageName,
+                        'product_id' => $product->id
+                    ]);
                 }
             }
 
-            // ===== SAVE VARIANT =====
-            $productDetail = new ProductDetail();
-            $productDetail->product_id = $product->id;
-            $productDetail->color_id   = $variant['color_id'];
-            $productDetail->size_id    = $variant['size_id'];
-            $productDetail->price      = $product->orginal_rate;
-            $productDetail->quantity   = $variant['quantity'];
-            $productDetail->images         = json_encode($variant_images);
-            $productDetail->gallery_images = $gallery_file_name;
+            $gallery_file_name = null;
+            if ($request->hasFile('gallery_images')) {
+                $gFile = $request->file('gallery_images');
+                $gallery_file_name = date('YmdHis') . '_' . uniqid() . '.' . $gFile->extension();
+                $gFile->move(public_path('gallery_images'), $gallery_file_name);
+            }
 
-            $productDetail->save();
+            // ========================
+            // 4. VARIANTS SAVE 🔥
+            // ========================
+            foreach ($request->variants as $index => $variant) {
+
+                // ✅ EXTRA SAFETY (WILL TRIGGER ROLLBACK)
+                if (
+                    // empty($variant['color_id']) ||
+                    // empty($variant['size_id']) ||
+                    !isset($variant['quantity'])
+                ) {
+                    throw new \Exception("Variant data missing at row " . ($index + 1));
+                }
+
+                $variant_images = [];
+
+                // ===== VARIANT IMAGES =====
+                if ($request->hasFile("variants.{$index}.images")) {
+                    foreach ($request->file("variants.{$index}.images") as $img) {
+                        $imgName = date('YmdHis') . '_' . uniqid() . '.' . $img->extension();
+                        $img->move(public_path('variant_images'), $imgName);
+                        $variant_images[] = $imgName;
+                    }
+                }
+
+                // ===== SAVE VARIANT =====
+                $productDetail = new ProductDetail();
+                $productDetail->product_id = $product->id;
+                $productDetail->color_id   = $variant['color_id'];
+                $productDetail->size_id    = $variant['size_id'];
+                $productDetail->price      = $product->orginal_rate;
+                $productDetail->quantity   = $variant['quantity'];
+                $productDetail->images         = json_encode($variant_images);
+                $productDetail->gallery_images = $gallery_file_name;
+
+                $productDetail->save();
+            }
+
+            DB::commit(); // ✅ SUCCESS
+
+            return redirect()->route('admin.product')
+                ->with('success', 'Product added successfully ✅');
+        } catch (\Exception $e) {
+
+            DB::rollBack(); // ❌ ROLLBACK EVERYTHING
+
+            return back()->withInput()->withErrors([
+                'error' => $e->getMessage()
+            ]);
         }
-
-        DB::commit(); // ✅ SUCCESS
-
-        return redirect()->route('admin.product')
-            ->with('success', 'Product added successfully ✅');
-
-    } catch (\Exception $e) {
-
-        DB::rollBack(); // ❌ ROLLBACK EVERYTHING
-
-        return back()->withInput()->withErrors([
-            'error' => $e->getMessage()
-        ]);
     }
-}
 
     public function adminProductUpdate(Request $request)
     {
@@ -555,7 +554,7 @@ public function productStore(Request $request)
                     foreach ($oldImgs as $img) {
                         if (!in_array($img, (array)$removedImgs)) {
                             $final_variant_images[] = $img;
-                        } 
+                        }
                     }
                 }
 
@@ -697,7 +696,7 @@ public function productStore(Request $request)
 
     public function coupon_code_delete($id)
     {
-        $coupon_code                 = Coupon::where('id', $id)->first();
+        $coupon_code = Coupon::where('id', $id)->first();
         $coupon_code->delete();
         if ($coupon_code) {
             return redirect()->route('admin.coupon_code')->with('success', 'Coupon code has been deleted successfully');

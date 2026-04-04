@@ -119,11 +119,8 @@
                                 <select name="state" id="state" class="form-control" required>
                                     <option value="">Select State</option>
                                     @foreach ($states as $state)
-                                        <option value="{{ $state }}"
-                                            {{ isset($address) && $address->state == $state ? 'selected' : '' }}>
-                                            {{ $state }}
-                                        </option>
-                                    @endforeach
+    <option value="{{ $state }}">{{ $state }}</option>
+@endforeach
                                 </select>
                             </div>
 
@@ -260,19 +257,6 @@
             </div>
 
             <h2 class="page_title">Checkout</h2>
-            @if (session('addsuccess'))
-                <div class="alert alert-success alert-dismissible fade show" id="add-success-alert">
-                    {{ session('addsuccess') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            @if (session('adderror'))
-                <div class="alert alert-danger alert-dismissible fade show" id="add-error-alert">
-                    {{ session('adderror') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -293,9 +277,9 @@
                     </div>
                 @endif
 
-                @if (session('success'))
+                @if (session('addsuccess'))
                     <div class="alert alert-success" id="coupon-success-alert">
-                        {{ session('success') }}
+                        {{ session('addsuccess') }}
                     </div>
                 @endif
                 <div class="row gy-4">
@@ -352,6 +336,11 @@
                             </div>
                         @else
                             <div class="address_box text-center mb-3">
+                                <div class="d-flex justify-content-end mb-2">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#changeAddressModal">
+                                        Change
+                                    </a>
+                                </div>
                                 <p>No default address found.</p>
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#newAddressModal"
                                     class="btn common_btn mt-2">Add Address</a>
@@ -435,17 +424,22 @@
                                     <span>₹ <span id="coupon">{{ number_format($couponDiscount, 2) }}</span></span>
                                 </div>
 
-                                <div class="d-flex justify-content-between mb-3">
+                               <div class="d-flex justify-content-between mb-3">
                                     <span>Shipping</span>
-                                    <span>FREE</span>
-
+                                    <span>
+                                        @if($shipping_charge > 0)
+                                            ₹ {{ number_format($shipping_charge, 2) }}
+                                        @else
+                                            FREE
+                                        @endif
+                                    </span>
                                 </div>
                                 <hr>
 
                                 <div class="d-flex justify-content-between fw-bold fs-5">
                                     <span class="d-flex">Total<p class="mx-1 mt-1">(Incl of all taxes)</p></span>
                                     <span>
-                                        ₹ {{ number_format($subtotal + $totalgst - $couponDiscount, 2) }}
+                                        ₹ {{ number_format($subtotal + $totalgst + $shipping_charge - $couponDiscount, 2) }}
                                     </span>
                                 </div>
 
@@ -461,7 +455,7 @@
                                 <!-- Hidden Inputs -->
                                 <input type="hidden" name="total_amount"
                                     value="{{ $total + $totalgst - $couponDiscount }}">
-                                <input type="hidden" name="shipping_cost" value="0">
+                                <input type="hidden" name="shipping_charge" value="{{ $shipping_charge }}">
                                 <input type="hidden" name="coupon_discount"
                                     value="{{ number_format($couponDiscount, 2) }}">
 
@@ -557,7 +551,7 @@
             </div>
 
 
-            <div class="modal fade form_modal" id="editaddress" tabindex="-1" aria-labelledby="editAddressModalLabel"
+               <div class="modal fade form_modal" id="editaddress" tabindex="-1" aria-labelledby="editAddressModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
@@ -571,7 +565,7 @@
                             <form class="row gy-4 gx-3" action="{{ route('user.updateAddress') }}" method="post">
                                 @csrf
 
-                                <!-- 🔥 IMPORTANT HIDDEN ID -->
+                                <!-- ðŸ”¥ IMPORTANT HIDDEN ID -->
                                 <input type="hidden" name="id" id="edit_id">
 
                                 <div class="col-md-6">
@@ -648,7 +642,7 @@
                                 </div>
 
                                 <div class="col-md-12">
-                                    <div class="form-check">
+                                    <div class="form-check d-none" id="edit_make_default_container">
                                         <input type="hidden" name="make_default" value="0">
                                         <input type="checkbox" id="edit_make_default" name="make_default"
                                             value="1">
@@ -673,139 +667,6 @@
         </div>
     </section>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{-- 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            const countryApi = "https://countriesnow.space/api/v0.1/countries/states";
-            const cityApi = "https://countriesnow.space/api/v0.1/countries/state/cities";
-
-            function removeDiacritics(str) {
-                return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            }
-
-            // ===============================
-            // GENERIC LOAD STATES FUNCTION
-            // ===============================
-            async function loadStates(countryName, stateSelect, selectedState = null) {
-
-                stateSelect.innerHTML = '<option value="">Select State</option>';
-
-                const res = await fetch(countryApi);
-                const data = await res.json();
-
-                const selectedCountry = data.data.find(c => c.name === countryName);
-
-                if (selectedCountry && selectedCountry.states.length) {
-
-                    selectedCountry.states.forEach(s => {
-                        const stateName = typeof s === "string" ? s : s.name;
-
-                        const opt = document.createElement("option");
-                        opt.value = stateName;
-                        opt.textContent = stateName;
-
-                        if (selectedState && selectedState === stateName) {
-                            opt.selected = true;
-                        }
-
-                        stateSelect.appendChild(opt);
-                    });
-                }
-            }
-
-            // ===============================
-            // GENERIC LOAD CITIES FUNCTION
-            // ===============================
-            async function loadCities(countryName, stateName, citySelect, selectedCity = null) {
-
-                citySelect.innerHTML = '<option value="">Select City</option>';
-
-                const res = await fetch(cityApi, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        country: countryName,
-                        state: stateName
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.data && data.data.length) {
-                    data.data.forEach(c => {
-
-                        const cleanCity = removeDiacritics(c);
-
-                        const opt = document.createElement("option");
-                        opt.value = cleanCity;
-                        opt.textContent = cleanCity;
-
-                        if (selectedCity && selectedCity === cleanCity) {
-                            opt.selected = true;
-                        }
-
-                        citySelect.appendChild(opt);
-                    });
-                }
-            }
-
-            // ===============================
-            // ADD FORM
-            // ===============================
-            const country = document.getElementById("country");
-            const state = document.getElementById("state");
-            const city = document.getElementById("city");
-
-            if (country) {
-                country.addEventListener("change", async function() {
-                    await loadStates(this.value, state);
-                    city.innerHTML = '<option value="">Select City</option>';
-                });
-
-                state.addEventListener("change", async function() {
-                    await loadCities(country.value, this.value, city);
-                });
-            }
-
-            // ===============================
-            // EDIT FORM
-            // ===============================
-            const editCountry = document.getElementById("edit_country");
-            const editState = document.getElementById("edit_state");
-            const editCity = document.getElementById("edit_city");
-
-            document.querySelectorAll('[data-bs-target="#editaddress"]').forEach(button => {
-
-                button.addEventListener("click", async function() {
-
-                    const selectedCountry = this.dataset.country;
-                    const selectedState = this.dataset.state;
-                    const selectedCity = this.dataset.city;
-
-                    document.getElementById('edit_id').value = this.dataset.id;
-                    document.getElementById('edit_fname').value = this.dataset.fname;
-                    document.getElementById('edit_lname').value = this.dataset.lname;
-                    document.getElementById('edit_email').value = this.dataset.email;
-                    document.getElementById('edit_phone').value = this.dataset.phone;
-                    document.getElementById('edit_address').value = this.dataset.address;
-                    document.getElementById('edit_country').value = selectedCountry;
-                    document.getElementById('edit_pincode').value = this.dataset.pincode;
-                    document.getElementById('edit_make_default').checked =
-                        this.dataset.make_default == 1;
-
-                    // 🔥 LOAD STATES THEN SELECT
-                    await loadStates(selectedCountry, editState, selectedState);
-
-                    // 🔥 LOAD CITIES THEN SELECT
-                    await loadCities(selectedCountry, selectedState, editCity, selectedCity);
-                });
-            });
-
-        });
-    </script> --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -986,24 +847,17 @@
 
         });
     </script>
-    {{-- 
-        REPLACE only the GST script block at the bottom of your checkout.blade.php
-        Find the script starting with: document.addEventListener("DOMContentLoaded", function() {
-            const gstContainer = document.getElementById("gstBreakup");
-            let subtotal = ...
-        and replace it with this:
-    --}}
-
+  
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
 
             const gstContainer = document.getElementById("gstBreakup");
 
             if (!gstContainer) return;
 
-            let subtotal   = parseFloat(document.getElementById("subtotalAmount")?.value || 0);
-            let gstAmount  = parseFloat(document.getElementById("gstAmount")?.value || 0);
-            let state      = (document.getElementById("shippingState")?.value || "").toLowerCase().trim();
+            let subtotal = parseFloat(document.getElementById("subtotalAmount")?.value || 0);
+            let gstAmount = parseFloat(document.getElementById("gstAmount")?.value || 0);
+            let state = (document.getElementById("shippingState")?.value || "").toLowerCase().trim();
 
             // Calculate GST % from subtotal and gst amount
             // gstRate = (gstAmount / subtotal) * 100  — rounded to nearest integer
