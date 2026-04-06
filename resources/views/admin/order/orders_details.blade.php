@@ -258,8 +258,8 @@
                 $isTamilNadu = ($stateName == 'tamil nadu');
                 $coupon = (float)str_replace(',', '', $orders->coupon_discount ?? 0);
                 
-                // Final Grand Total calculation
-                $grandTotal = ($calculatedSubtotal + $finalGst) - $coupon;
+                $shipping = (float)($orders->shipping_charge ?? 0);
+                $grandTotal = ($calculatedSubtotal + $finalGst + $shipping) - $coupon;
             @endphp
             
             <table class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -280,7 +280,7 @@
                         </tr>
                     @else
                         <tr>
-                            <td>IGST ({{ $orders_details->first()->product_gst }}%)</td>
+                            <td>IGST</td>
                             <td style="text-align: right;"> ₹{{ number_format($finalGst, 2) }} </td> 
                         </tr>
                     @endif
@@ -291,7 +291,12 @@
                         <td style="text-align: right; color: red;">- ₹{{ number_format($coupon, 2) }} </td> 
                     </tr>
                     @endif
-
+                    @if($shipping > 0)
+                    <tr>
+                        <td>Shipping Charge</td>
+                        <td style="text-align: right;">₹{{ number_format($shipping, 2) }}</td>
+                    </tr>
+                    @endif
                     <tr style="background-color: #f8f9fa;">
                         <th style="font-size: 16px;">Grand Total</th>
                         <th style="text-align: right; font-size: 16px;">₹{{ number_format($grandTotal, 2) }} </th> 

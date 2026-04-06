@@ -301,6 +301,18 @@ ul {
 ol {
         list-style-type: decimal;
 }
+.butt-col.btn.active,
+.butt-col.btn:active {
+background-color: #272727 !important;
+border-color: #272727 !important;
+color: #fff !important;
+}
+.butt-col.btn:hover,
+.butt-col.btn:focus {
+background-color: #272727 !important;
+border-color: #272727 !important;
+color: #fff !important;
+}
 </style>
 
 
@@ -427,7 +439,7 @@ ol {
                                             <input type="radio" class="btn-check" name="color" id="color-{{ $color->id }}"
                                                 value="{{ $color->id }}"
                                                 @if ($colorId == $color->id || $colors->count() == 1) checked @endif>
-                                            <label class="btn btn-outline-secondary @if ($colorId == $color->id || $colors->count() == 1) active @endif"
+                                            <label class="butt-col btn btn-outline-secondary @if ($colorId == $color->id || $colors->count() == 1) active @endif"
                                                 for="color-{{ $color->id }}">{{ $color->color }}</label>
                                         @endforeach
                                     </div>
@@ -458,7 +470,7 @@ ol {
                                         <input type="radio" class="btn-check" name="size" id="size-{{ $size->id }}"
                                             value="{{ $size->id }}"
                                             @if ($sizeId == $size->id || $sizes->count() == 1) checked @endif>
-                                        <label class="btn btn-outline-secondary @if ($sizeId == $size->id || $sizes->count() == 1) active @endif"
+                                        <label class="butt-col btn btn-outline-secondary @if ($sizeId == $size->id || $sizes->count() == 1) active @endif"
                                             for="size-{{ $size->id }}">{{ $size->name }}</label>
                                     @endforeach
                                 </div>
