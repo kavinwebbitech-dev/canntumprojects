@@ -91,15 +91,18 @@
             font-size: 12px;
             padding: 5px 10px;
         }
+
         .coll-6 {
-            padding: 0 5px; 
+            padding: 0 5px;
         }
+
         .pado {
-            padding: 0 ; 
+            padding: 0;
             width: auto !important;
         }
+
         .pri {
-            padding: 0 6px; 
+            padding: 0 6px;
             width: auto !important;
         }
     </style>
@@ -121,471 +124,533 @@
     </section>
 
     <section class="trending_collection">
-        <div class="container">
-            {{-- <h1 class="trending_title animate__animated animate__fadeInLeft" data-delay="2s">Trending must-haves</h1> --}}
-            <div class="mt-lg-5 mt-2">
-                <div class="collection_list">
-                    <div class="row gy-4 gx-lg-2 gx-xxl-5">
-                        @php
-                            $product_unique_img = App\Models\Product::where('deleted', 0)
-                                ->where('new_arrival', 1)
-                                ->where('status', 1)
-                                ->latest()
-                                ->take(4)
-                                ->get();
-                        @endphp
+        <div class="container jst-pr-grid-container">
+            <div class="row">
 
-                        @foreach ($product_unique_img as $key => $value)
-                            <div class="col-lg-3 col-md-6 animate__animated animate__fadeIn" data-delay="2s">
-                                <div class="card">
-                                    <div class="card_img">
-                                        <a href="{{ route('product.details.show', $value->id) }}">
-                                            <img src="{{ url('public/product_images/' . $value->product_img) }}"
-                                                alt="">
-                                        </a>
-                                        <div class="trending_bg">
-                                            <img src="<?php echo url(''); ?>/assets/images/cart-badge.svg" alt="">
-                                            New Arrival
-                                        </div>
-                                    </div>
-                                    @php
-                                        $product_price = App\Models\ProductDetail::where(
-                                            'product_id',
-                                            $value->id,
-                                        )->first();
-                                        // dd($product_price);
-                                    @endphp
-                                    <div class="card_body">
-                                        <h5 class="card_title text-truncate text-center">
-                                            <a style="color:white !important;"
-                                                href="{{ route('product.details.show', $value->id) }}">
-                                                {{ $value->product_name }}
-                                            </a>
-                                        </h5>
-                                        <div class="row align-items-center">
-                                            <div class="col-6">
-                                                @if ($product_price)
-                                                    <div class="col-6 coll-6">
-                                                        @php
-                                                            $FirstProductDiscountedPrice =
-                                                                $product_price->price -
-                                                                $product_price->price * ($value->discount / 100);
-                                                        @endphp
-                                                        <div class="card_text">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-auto pri">
-                                                                    <span class="price">
-                                                                        Rs. {{ round($FirstProductDiscountedPrice) }}
-                                                                        @if ($value->discount)
-                                                                            <span
-                                                                                class="amount_strike">{{ $product_price->price }}
-                                                                            </span>
-                                                                        @endif
-                                                                    </span>
-                                                                </div>
-                                                                @if ($value->discount)
-                                                                    <div class="col-auto pado">
-                                                                        <span
-                                                                            class="offer_text">{{ round($value->discount) }}%
-                                                                            Off</span>
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                @if ($product_price && $product_price->quantity > 0)
-                                                    <p class="text-end">
-                                                        <a href="{{ route('product.details.show', $value->id) }}"
-                                                            class="btn shop-btn">Add to cart</a>
-                                                    </p>
-                                                @else
-                                                    {{-- Out of Stock --}}
-                                                    <span class="shop-btn"
-                                                        style="font-size: 12px; padding: 7px 6px; cursor: not-allowed; opacity: 0.6;">
-                                                        Out of stock
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
+                @php
+                    $products = App\Models\Product::where('deleted', 0)
+                        ->where('new_arrival', 1)
+                        ->where('status', 1)
+                        ->latest()
+                        ->take(4)
+                        ->get();
+                @endphp
+
+                @foreach ($products as $value)
+                    @php
+                        $product_price = App\Models\ProductDetail::where('product_id', $value->id)->first();
+                    @endphp
+
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card jst-pr-card-outer">
+
+                            <!-- IMAGE -->
+                            <div class="jst-pr-media-frame">
+                                <a href="{{ route('product.details.show', $value->id) }}">
+                                    <img loading="lazy" src="{{ url('public/product_images/' . $value->product_img) }}"
+                                        alt="{{ $value->product_name }}">
+                                </a>
+
+                                <div class="jst-pr-badge-layer">
+                                    <img class="badge-imgg" src="{{ url('assets/images/cart-badge.svg') }}" width="16"
+                                        alt="">
+                                    <p class="badge-p">New Arrival</p>
                                 </div>
                             </div>
-                        @endforeach
+
+                            <!-- CONTENT -->
+                            <div class="jst-pr-info-block">
+
+                                <!-- TITLE -->
+                                <h5 class="jst-pr-headline text-truncate">
+                                    <a href="{{ route('product.details.show', $value->id) }}"
+                                        style="color:white; text-decoration:none;">
+                                        {{ $value->product_name }}
+                                    </a>
+                                </h5>
+
+                                <!-- FOOTER -->
+                                <div class="jst-pr-action-row">
+
+                                    <!-- PRICE -->
+                                    <div class="jst-pr-val-stack">
+                                        @if ($product_price)
+                                            @php
+                                                $discounted =
+                                                    $product_price->price -
+                                                    $product_price->price * ($value->discount / 100);
+                                            @endphp
+
+                                            <span class="jst-pr-active-price">
+                                                Rs. {{ round($discounted) }}
+                                            </span>
+
+                                            @if ($value->discount)
+                                                <span class="jst-pr-was-price">
+                                                    {{ $product_price->price }}
+                                                </span>
+
+                                                <span class="jst-pr-pct-tag">
+                                                    {{ round($value->discount) }}% Off
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
+
+                                    <!-- BUTTON -->
+                                    @if ($product_price && $product_price->quantity > 0)
+                                        <a href="{{ route('product.details.show', $value->id) }}"
+                                            class="btn jst-pr-buy-btn">
+                                            Add to cart
+                                        </a>
+                                    @else
+                                        <span class="btn jst-pr-buy-btn1" style="cursor:not-allowed; opacity:0.6;">
+                                            Out of stock
+                                        </span>
+                                    @endif
+
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
-                </div>
+                @endforeach
+
             </div>
         </div>
     </section>
 
     <section class="best_product">
         <div class="container">
-            <h5 class="product_title animate__animated animate__fadeInLeft" data-delay="2s">Best Selling Products</h5>
+            <h5 class="product_title animate__animated animate__fadeInLeft" data-delay="2s">
+                Best Selling Products
+            </h5>
+
             <div class="product_collections mt-5">
                 <div class="owl-carousel product-slider">
+
                     @php
-                        $product_unique_img = App\Models\Product::where('deleted', 0)
+                        $products = App\Models\Product::where('deleted', 0)
                             ->where('best_sellers', 1)
                             ->where('status', 1)
                             ->latest()
                             ->get();
                     @endphp
 
-                    @foreach ($product_unique_img as $key => $value)
+                    @foreach ($products as $value)
                         @php
                             $product_price = App\Models\ProductDetail::where('product_id', $value->id)->first();
                         @endphp
+
                         <div class="item">
-                            <div class="card">
-                                <div class="card_img">
+                            <div class="card jst-pr-card-outer">
+
+                                <!-- IMAGE -->
+                                <div class="jst-pr-media-frame">
                                     <a href="{{ route('product.details.show', $value->id) }}">
-                                        <img src="{{ url('public/product_images/' . $value->product_img) }}"
-                                            alt="">
+                                        <img loading="lazy" src="{{ url('public/product_images/' . $value->product_img) }}"
+                                            alt="{{ $value->product_name }}">
                                     </a>
-                                </div>
-                                <div class="card_body">
-                                    <h5 class="card_title text-truncate">
-                                        <a
-                                            href="{{ route('product.details.show', $value->id) }}">{{ $value->product_name }}</a>
-                                    </h5>
-                                    <div class="row align-items-center">
-                                        <div class="col-6">
-                                            @if ($product_price)
-                                                <div class="col-6 coll-6">
-                                                    @php
-                                                        $FirstProductDiscountedPrice =
-                                                            $product_price->price -
-                                                            $product_price->price * ($value->discount / 100);
-                                                    @endphp
-                                                    <div class="card_text">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-auto pri">
-                                                                <span class="price">
-                                                                    Rs. {{ round($FirstProductDiscountedPrice) }}
-                                                                    @if ($value->discount)
-                                                                        <span
-                                                                            class="amount_strike">{{ $product_price->price }}
-                                                                        </span>
-                                                                    @endif
-                                                                </span>
-                                                            </div>
-                                                            @if ($value->discount)
-                                                                <div class="col-auto pado">
-                                                                    <span class="offer_text">{{ round($value->discount) }}%
-                                                                        Off</span>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            @if ($product_price && $product_price->quantity > 0)
-                                                <p class="text-end">
-                                                    <a href="{{ route('product.details.show', $value->id) }}"
-                                                        class="btn shop-btn">Add to cart</a>
-                                                </p>
-                                            @else
-                                                {{-- Out of Stock --}}
-                                                <span class="shop-btn"
-                                                    style="font-size: 12px; padding: 7px 6px; cursor: not-allowed; opacity: 0.6;">
-                                                    Out of stock
-                                                </span>
-                                            @endif
-                                        </div>
+
+                                    <div class="jst-pr-badge-layer">
+                                        <img class="badge-imgg" src="{{ url('assets/images/cart-badge.svg') }}"
+                                            width="16" alt="">
+                                        <p class="badge-p">Best Seller</p>
                                     </div>
                                 </div>
+
+                                <!-- CONTENT -->
+                                <div class="jst-pr-info-block">
+
+                                    <!-- TITLE -->
+                                    <h5 class="jst-pr-headline text-truncate">
+                                        <a href="{{ route('product.details.show', $value->id) }}"
+                                            style="color:white; text-decoration:none;">
+                                            {{ $value->product_name }}
+                                        </a>
+                                    </h5>
+
+                                    <!-- FOOTER -->
+                                    <div class="jst-pr-action-row">
+
+                                        <!-- PRICE -->
+                                        <div class="jst-pr-val-stack">
+                                            @if ($product_price)
+                                                @php
+                                                    $discounted =
+                                                        $product_price->price -
+                                                        $product_price->price * ($value->discount / 100);
+                                                @endphp
+
+                                                <span class="jst-pr-active-price">
+                                                    Rs. {{ round($discounted) }}
+                                                </span>
+
+                                                @if ($value->discount)
+                                                    <span class="jst-pr-was-price">
+                                                        {{ $product_price->price }}
+                                                    </span>
+
+                                                    <span class="jst-pr-pct-tag">
+                                                        {{ round($value->discount) }}% Off
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
+
+                                        <!-- BUTTON -->
+                                        @if ($product_price && $product_price->quantity > 0)
+                                            <a href="{{ route('product.details.show', $value->id) }}"
+                                                class=" jst-pr-buy-btn">
+                                                Add to cart
+                                            </a>
+                                        @else
+                                            <span class="btn jst-pr-buy-btn1" style="cursor:not-allowed; opacity:0.6;">
+                                                Out of stock
+                                            </span>
+                                        @endif
+
+                                    </div>
+
+                                </div>
+
                             </div>
                         </div>
                     @endforeach
+
                 </div>
             </div>
         </div>
     </section>
 
     <section class="offer_product">
-        <h5 class="product_title animate__animated animate__fadeInLeft" data-delay="2s">offer Products</h5>
-        <div class="mt-5">
-            <div class="row gy-4 align-items-center">
-                <div class="col-lg-4 col-md-4">
-                    <div class="product_left animate__animated animate__fadeInUp" data-delay="2s">
-                        <h5 class="product_left_title">Popular Categories</h5>
-                        <div class="d-flex align-items-start">
-                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
-                                aria-orientation="vertical">
-                                <button class="nav-link active" id="v-pills-new-arrival-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-new-arrival" type="button" role="tab"
-                                    aria-controls="v-pills-new-arrival" aria-selected="true">New Arrivals</button>
-                                <button class="nav-link" id="v-pills-best-selling-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-best-selling" type="button" role="tab"
-                                    aria-controls="v-pills-best-selling" aria-selected="false">Best Selling</button>
-                                <button class="nav-link" id="v-pills-trending-week-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-trending-week" type="button" role="tab"
-                                    aria-controls="v-pills-trending-week" aria-selected="false">Trending This
-                                    Week</button>
+        <div class="container">
+            <h5 class="product_title">Offer Products</h5>
+
+            <div class="mt-5">
+                <div class="row gy-4 align-items-center">
+
+                    <!-- LEFT MENU -->
+                    <div class="col-lg-4 col-md-4">
+                        <div class="product_left">
+                            <h5 class="product_left_title">Popular Categories</h5>
+
+                            <div class="nav flex-column nav-pills">
+                                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-new">
+                                    New Arrivals
+                                </button>
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-best">
+                                    Best Selling
+                                </button>
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-trending">
+                                    Trending This Week
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-8 col-md-8">
-                    <div class="product_collections animate__animated animate__fadeInRight" data-delay="2s">
-                        <div class="tab-content" id="v-pills-tabContent">
-                            <!-- New Arrivals Tab -->
-                            <div class="tab-pane fade show active" id="v-pills-new-arrival" role="tabpanel"
-                                aria-labelledby="v-pills-new-arrival-tab" tabindex="0">
+
+                    <!-- RIGHT CONTENT -->
+                    <div class="col-lg-8 col-md-8">
+                        <div class="tab-content">
+
+                            <!-- ================= NEW ARRIVAL ================= -->
+                            <div class="tab-pane fade show active" id="tab-new">
                                 <div class="owl-carousel product-slider1">
+
                                     @php
-                                        $product_unique_img = App\Models\Product::where('deleted', 0)
+                                        $products = App\Models\Product::where('deleted', 0)
                                             ->where('new_arrival', 1)
                                             ->where('status', 1)
                                             ->latest()
                                             ->get();
                                     @endphp
 
-                                    @foreach ($product_unique_img as $key => $value)
+                                    @foreach ($products as $value)
                                         @php
                                             $product_price = App\Models\ProductDetail::where(
                                                 'product_id',
                                                 $value->id,
                                             )->first();
                                         @endphp
+
                                         <div class="item">
-                                            <div class="card">
-                                                <div class="card_img">
+                                            <div class="card jst-pr-card-outer">
+
+                                                <!-- IMAGE -->
+                                                <div class="jst-pr-media-frame">
                                                     <a href="{{ route('product.details.show', $value->id) }}">
-                                                        <img src="{{ url('public/product_images/' . $value->product_img) }}"
-                                                            alt="">
+                                                        <img loading="lazy"
+                                                            src="{{ url('public/product_images/' . $value->product_img) }}"
+                                                            alt="{{ $value->product_name }}">
                                                     </a>
-                                                </div>
-                                                <div class="card_body">
-                                                    <h5 class="card_title text-truncate">
-                                                        <a
-                                                            href="{{ route('product.details.show', $value->id) }}">{{ $value->product_name }}</a>
-                                                    </h5>
-                                                    <div class="row align-items-center">
-                                                        <div class="col-7">
-                                                            @php
-                                                                $price = $product_price
-                                                                    ? $product_price->price -
-                                                                        $product_price->price * ($value->discount / 100)
-                                                                    : 0;
-                                                            @endphp
-                                                            <div class="card_text">
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-auto pri">
-                                                                        <span class="price" style="padding-left: 3px;">
-                                                                            Rs. {{ round($price) }}
-                                                                            @if ($product_price && $value->discount)
-                                                                                <span
-                                                                                    class="amount_strike">{{ $product_price->price }}
-                                                                                </span>
-                                                                            @endif
-                                                                        </span>
-                                                                    </div>
-                                                                    @if ($value->discount)
-                                                                        <div class="col-auto pado">
-                                                                            <span
-                                                                                class="offer_text">{{ round($value->discount) }}%
-                                                                            </span>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-5 text-end">
-                                                            @if ($product_price && $product_price->quantity > 0)
-                                                                <p class="text-end">
-                                                                    <a href="{{ route('product.details.show', $value->id) }}"
-                                                                        class="btn shop-btn">Add to cart</a>
-                                                                </p>
-                                                            @else
-                                                                {{-- Out of Stock --}}
-                                                                <span class="shop-btn"
-                                                                    style="font-size: 12px; padding: 7px 6px; cursor: not-allowed; opacity: 0.6;">
-                                                                    Out of stock
-                                                                </span>
-                                                            @endif
-                                                        </div>
+
+                                                    <div class="jst-pr-badge-layer">
+                                                        <img class="badge-imgg"
+                                                            src="{{ url('assets/images/cart-badge.svg') }}" alt="">
+                                                        <p class="badge-p">New Arrival</p>
                                                     </div>
                                                 </div>
+
+                                                <!-- CONTENT -->
+                                                <div class="jst-pr-info-block">
+                                                    <h5 class="jst-pr-headline text-truncate">
+                                                        <a href="{{ route('product.details.show', $value->id) }}"
+                                                            style="color:white; text-decoration:none;">
+                                                            {{ $value->product_name }}
+                                                        </a>
+                                                    </h5>
+
+                                                    <div class="jst-pr-action-row">
+
+                                                        <!-- PRICE -->
+                                                        <div class="jst-pr-val-stack">
+                                                            @if ($product_price)
+                                                                @php
+                                                                    $price =
+                                                                        $product_price->price -
+                                                                        $product_price->price *
+                                                                            ($value->discount / 100);
+                                                                @endphp
+
+                                                                <span class="jst-pr-active-price">
+                                                                    Rs. {{ round($price) }}
+                                                                </span>
+
+                                                                @if ($value->discount)
+                                                                    <span class="jst-pr-was-price">
+                                                                        {{ $product_price->price }}
+                                                                    </span>
+
+                                                                    <span class="jst-pr-pct-tag">
+                                                                        {{ round($value->discount) }}% Off
+                                                                    </span>
+                                                                @endif
+                                                            @endif
+                                                        </div>
+
+                                                        <!-- BUTTON -->
+                                                        @if ($product_price && $product_price->quantity > 0)
+                                                            <a href="{{ route('product.details.show', $value->id) }}"
+                                                                class="btn jst-pr-buy-btn">
+                                                                Add to cart
+                                                            </a>
+                                                        @else
+                                                            <span class="btn jst-pr-buy-btn1"
+                                                                style="opacity:0.6; cursor:not-allowed;">
+                                                                Out of stock
+                                                            </span>
+                                                        @endif
+
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     @endforeach
+
                                 </div>
                             </div>
 
-                            <!-- Best Selling Tab -->
-                            <div class="tab-pane fade" id="v-pills-best-selling" role="tabpanel"
-                                aria-labelledby="v-pills-best-selling-tab" tabindex="0">
+                            <!-- ================= BEST SELLING ================= -->
+                            <div class="tab-pane fade" id="tab-best">
                                 <div class="owl-carousel product-slider1">
+
                                     @php
-                                        $product_unique_img = App\Models\Product::where('deleted', 0)
+                                        $products = App\Models\Product::where('deleted', 0)
                                             ->where('best_sellers', 1)
                                             ->where('status', 1)
                                             ->latest()
                                             ->get();
                                     @endphp
 
-                                    @foreach ($product_unique_img as $key => $value)
+                                    @foreach ($products as $value)
                                         @php
                                             $product_price = App\Models\ProductDetail::where(
                                                 'product_id',
                                                 $value->id,
                                             )->first();
                                         @endphp
+
                                         <div class="item">
-                                            <div class="card">
-                                                <div class="card_img">
+                                            <div class="card jst-pr-card-outer">
+
+                                                <!-- IMAGE -->
+                                                <div class="jst-pr-media-frame">
                                                     <a href="{{ route('product.details.show', $value->id) }}">
-                                                        <img src="{{ url('public/product_images/' . $value->product_img) }}"
-                                                            alt="">
+                                                        <img loading="lazy"
+                                                            src="{{ url('public/product_images/' . $value->product_img) }}"
+                                                            alt="{{ $value->product_name }}">
                                                     </a>
-                                                </div>
-                                                <div class="card_body">
-                                                    <h5 class="card_title text-truncate">
-                                                        <a
-                                                            href="{{ route('product.details.show', $value->id) }}">{{ $value->product_name }}</a>
-                                                    </h5>
-                                                    <div class="row align-items-center">
-                                                        <div class="col-7">
-                                                            @php
-                                                                $price = $product_price
-                                                                    ? $product_price->price -
-                                                                        $product_price->price * ($value->discount / 100)
-                                                                    : 0;
-                                                            @endphp
-                                                            <div class="card_text">
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-auto pri">
-                                                                        <span class="price" style="padding-left: 3px;">
-                                                                            Rs. {{ round($price) }}
-                                                                            @if ($product_price && $value->discount)
-                                                                                <span
-                                                                                    class="amount_strike">{{ $product_price->price }}
-                                                                                </span>
-                                                                            @endif
-                                                                        </span>
-                                                                    </div>
-                                                                    @if ($value->discount)
-                                                                        <div class="col-auto pado">
-                                                                            <span
-                                                                                class="offer_text">{{ round($value->discount) }}%
-                                                                            </span>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-5 text-end">
-                                                            @if ($product_price && $product_price->quantity > 0)
-                                                                <p class="text-end">
-                                                                    <a href="{{ route('product.details.show', $value->id) }}"
-                                                                        class="btn shop-btn">Add to cart</a>
-                                                                </p>
-                                                            @else
-                                                                {{-- Out of Stock --}}
-                                                                <span class="shop-btn"
-                                                                    style="font-size: 12px; padding: 7px 6px; cursor: not-allowed; opacity: 0.6;">
-                                                                    Out of stock
-                                                                </span>
-                                                            @endif
-                                                        </div>
+
+                                                    <div class="jst-pr-badge-layer">
+                                                        <img class="badge-imgg"
+                                                            src="{{ url('assets/images/cart-badge.svg') }}"
+                                                            alt="">
+                                                        <p class="badge-p">Best Seller</p>
                                                     </div>
                                                 </div>
+
+                                                <!-- CONTENT -->
+                                                <div class="jst-pr-info-block">
+                                                    <h5 class="jst-pr-headline text-truncate">
+                                                        <a href="{{ route('product.details.show', $value->id) }}"
+                                                            style="color:white; text-decoration:none;">
+                                                            {{ $value->product_name }}
+                                                        </a>
+                                                    </h5>
+
+                                                    <div class="jst-pr-action-row">
+
+                                                        <!-- PRICE -->
+                                                        <div class="jst-pr-val-stack">
+                                                            @if ($product_price)
+                                                                @php
+                                                                    $price =
+                                                                        $product_price->price -
+                                                                        $product_price->price *
+                                                                            ($value->discount / 100);
+                                                                @endphp
+
+                                                                <span class="jst-pr-active-price">
+                                                                    Rs. {{ round($price) }}
+                                                                </span>
+
+                                                                @if ($value->discount)
+                                                                    <span class="jst-pr-was-price">
+                                                                        {{ $product_price->price }}
+                                                                    </span>
+
+                                                                    <span class="jst-pr-pct-tag">
+                                                                        {{ round($value->discount) }}% Off
+                                                                    </span>
+                                                                @endif
+                                                            @endif
+                                                        </div>
+
+                                                        <!-- BUTTON -->
+                                                        @if ($product_price && $product_price->quantity > 0)
+                                                            <a href="{{ route('product.details.show', $value->id) }}"
+                                                                class="btn jst-pr-buy-btn">
+                                                                Add to cart
+                                                            </a>
+                                                        @else
+                                                            <span class="btn jst-pr-buy-btn1"
+                                                                style="opacity:0.6; cursor:not-allowed;">
+                                                                Out of stock
+                                                            </span>
+                                                        @endif
+
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     @endforeach
+
                                 </div>
                             </div>
 
-                            <!-- Trending This Week Tab -->
-                            <div class="tab-pane fade" id="v-pills-trending-week" role="tabpanel"
-                                aria-labelledby="v-pills-trending-week-tab" tabindex="0">
+                            <!-- ================= TRENDING ================= -->
+                            <div class="tab-pane fade" id="tab-trending">
                                 <div class="owl-carousel product-slider1">
+
                                     @php
-                                        $product_unique_img = App\Models\Product::where('deleted', 0)
+                                        $products = App\Models\Product::where('deleted', 0)
                                             ->where('trending_tshirt', 1)
                                             ->where('status', 1)
                                             ->latest()
                                             ->get();
                                     @endphp
 
-                                    @foreach ($product_unique_img as $key => $value)
+                                    @foreach ($products as $value)
                                         @php
                                             $product_price = App\Models\ProductDetail::where(
                                                 'product_id',
                                                 $value->id,
                                             )->first();
                                         @endphp
-                                        <div class="item">
-                                            <div class="card">
-                                                <div class="card_img">
+
+                                       <div class="item">
+                                            <div class="card jst-pr-card-outer">
+
+                                                <!-- IMAGE -->
+                                                <div class="jst-pr-media-frame">
                                                     <a href="{{ route('product.details.show', $value->id) }}">
-                                                        <img src="{{ url('public/product_images/' . $value->product_img) }}"
-                                                            alt="">
+                                                        <img loading="lazy"
+                                                            src="{{ url('public/product_images/' . $value->product_img) }}"
+                                                            alt="{{ $value->product_name }}">
                                                     </a>
-                                                </div>
-                                                <div class="card_body">
-                                                    <h5 class="card_title text-truncate">
-                                                        <a
-                                                            href="{{ route('product.details.show', $value->id) }}">{{ $value->product_name }}</a>
-                                                    </h5>
-                                                    <div class="row align-items-center">
-                                                        <div class="col-7">
-                                                            @php
-                                                                $price = $product_price
-                                                                    ? $product_price->price -
-                                                                        $product_price->price * ($value->discount / 100)
-                                                                    : 0;
-                                                            @endphp
-                                                            <div class="card_text">
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-auto pri">
-                                                                        <span class="price" style="padding-left: 3px;">
-                                                                            Rs. {{ round($price) }}
-                                                                            @if ($product_price && $value->discount)
-                                                                                <span
-                                                                                    class="amount_strike">{{ $product_price->price }}
-                                                                                </span>
-                                                                            @endif
-                                                                        </span>
-                                                                    </div>
-                                                                    @if ($value->discount)
-                                                                        <div class="col-auto pado">
-                                                                            <span
-                                                                                class="offer_text">{{ round($value->discount) }}%
-                                                                            </span>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-5 text-end">
-                                                            @if ($product_price && $product_price->quantity > 0)
-                                                                <p class="text-end">
-                                                                    <a href="{{ route('product.details.show', $value->id) }}"
-                                                                        class="btn shop-btn">Add to cart</a>
-                                                                </p>
-                                                            @else
-                                                                {{-- Out of Stock --}}
-                                                                <span class="shop-btn"
-                                                                    style="font-size: 12px; padding: 7px 6px; cursor: not-allowed; opacity: 0.6;">
-                                                                    Out of stock
-                                                                </span>
-                                                            @endif
-                                                        </div>
+
+                                                    <div class="jst-pr-badge-layer">
+                                                        <img class="badge-imgg"
+                                                            src="{{ url('assets/images/cart-badge.svg') }}" alt="">
+                                                        <p class="badge-p">Trending</p>
                                                     </div>
                                                 </div>
+
+                                                <!-- CONTENT -->
+                                                <div class="jst-pr-info-block">
+                                                    <h5 class="jst-pr-headline text-truncate">
+                                                        <a href="{{ route('product.details.show', $value->id) }}"
+                                                            style="color:white; text-decoration:none;">
+                                                            {{ $value->product_name }}
+                                                        </a>
+                                                    </h5>
+
+                                                    <div class="jst-pr-action-row">
+
+                                                        <!-- PRICE -->
+                                                        <div class="jst-pr-val-stack">
+                                                            @if ($product_price)
+                                                                @php
+                                                                    $price =
+                                                                        $product_price->price -
+                                                                        $product_price->price *
+                                                                            ($value->discount / 100);
+                                                                @endphp
+
+                                                                <span class="jst-pr-active-price">
+                                                                    Rs. {{ round($price) }}
+                                                                </span>
+
+                                                                @if ($value->discount)
+                                                                    <span class="jst-pr-was-price">
+                                                                        {{ $product_price->price }}
+                                                                    </span>
+
+                                                                    <span class="jst-pr-pct-tag">
+                                                                        {{ round($value->discount) }}% Off
+                                                                    </span>
+                                                                @endif
+                                                            @endif
+                                                        </div>
+
+                                                        <!-- BUTTON -->
+                                                        @if ($product_price && $product_price->quantity > 0)
+                                                            <a href="{{ route('product.details.show', $value->id) }}"
+                                                                class="btn jst-pr-buy-btn">
+                                                                Add to cart
+                                                            </a>
+                                                        @else
+                                                            <span class="btn jst-pr-buy-btn1"
+                                                                style="opacity:0.6; cursor:not-allowed;">
+                                                                Out of stock
+                                                            </span>
+                                                        @endif
+
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     @endforeach
+
                                 </div>
                             </div>
+
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -619,10 +684,12 @@
 
     <section class="offer_product">
         <div class="container">
-            <h5 class="product_title animate__animated animate__fadeInLeft" data-delay="2s">Trending Products</h5>
+            <h5 class="product_title animate__animated animate__fadeInLeft">Trending Products</h5>
+
             <div class="mt-5">
-                <div class="product_collections animate__animated animate__fadeIn" data-delay="2s">
+                <div class="product_collections animate__animated animate__fadeIn">
                     <div class="owl-carousel product-slider">
+
                         @php
                             $product_unique_img = App\Models\Product::where('deleted', 0)
                                 ->where('trending_tshirt', 1)
@@ -631,70 +698,94 @@
                                 ->get();
                         @endphp
 
-                        @foreach ($product_unique_img as $key => $value)
+                        @foreach ($product_unique_img as $value)
                             @php
                                 $product_price = App\Models\ProductDetail::where('product_id', $value->id)->first();
+
+                                $price = 0;
+                                if ($product_price) {
+                                    $price = $product_price->price - $product_price->price * ($value->discount / 100);
+                                }
                             @endphp
+
                             <div class="item">
-                                <div class="card">
-                                    <div class="card_img">
+                                <div class="card jst-pr-card-outer">
+
+                                    <!-- IMAGE -->
+                                    <div class="jst-pr-media-frame">
                                         <a href="{{ route('product.details.show', $value->id) }}">
-                                            <img src="{{ url('public/product_images/' . $value->product_img) }}"
-                                                alt="">
+                                            <img loading="lazy"
+                                                src="{{ url('public/product_images/' . $value->product_img) }}"
+                                                alt="{{ $value->product_name }}">
                                         </a>
-                                    </div>
-                                    <div class="card_body">
-                                        <h5 class="card_title text-truncate">
-                                            <a
-                                                href="{{ route('product.details.show', $value->id) }}">{{ $value->product_name }}</a>
-                                        </h5>
-                                        <div class="row align-items-center">
-                                            <div class="col-6">
-                                                @php
-                                                    $price = $product_price
-                                                        ? $product_price->price -
-                                                            $product_price->price * ($value->discount / 100)
-                                                        : 0;
-                                                @endphp
-                                                <div class="card_text">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-auto pri">
-                                                            <span class="price" style="padding-left: 3px;">
-                                                                Rs. {{ round($price) }}
-                                                                @if ($product_price && $value->discount)
-                                                                    <span
-                                                                        class="amount_strike">{{ $product_price->price }}</span>
-                                                                @endif
-                                                            </span>
-                                                        </div>
-                                                        @if ($value->discount)
-                                                            <div class="col-auto pado ">
-                                                                <span class="offer_text">{{ round($value->discount) }}%
-                                                                    Off</span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                @if ($product_price && $product_price->quantity > 0)
-                                                    <p class="text-end">
-                                                        <a href="{{ route('product.details.show', $value->id) }}"
-                                                            class="btn shop-btn">Add to cart</a>
-                                                    </p>
-                                                @else
-                                                    {{-- Out of Stock --}}
-                                                    <span class="shop-btn"
-                                                        style="font-size: 12px; padding: 7px 6px; cursor: not-allowed; opacity: 0.6;">
-                                                        Out of stock
-                                                    </span>
-                                                @endif
-                                            </div>
+
+                                        <div class="jst-pr-badge-layer">
+                                            <img class="badge-imgg" src="{{ url('assets/images/cart-badge.svg') }}"
+                                                width="16" alt="">
+                                            <p class="badge-p">Trending</p>
                                         </div>
                                     </div>
+
+                                    <!-- CONTENT -->
+                                    <div class="jst-pr-info-block">
+
+                                        <!-- TITLE -->
+                                        <h5 class="jst-pr-headline text-truncate">
+                                            <a href="{{ route('product.details.show', $value->id) }}"
+                                                style="color:white; text-decoration:none;">
+                                                {{ $value->product_name }}
+                                            </a>
+                                        </h5>
+
+                                        <!-- FOOTER -->
+                                        <div class="jst-pr-action-row">
+
+                                            <!-- PRICE -->
+                                            <div class="jst-pr-val-stack">
+                                                @if ($product_price)
+                                                    @php
+                                                        $discounted =
+                                                            $product_price->price -
+                                                            $product_price->price * ($value->discount / 100);
+                                                    @endphp
+
+                                                    <span class="jst-pr-active-price">
+                                                        Rs. {{ round($discounted) }}
+                                                    </span>
+
+                                                    @if ($value->discount)
+                                                        <span class="jst-pr-was-price">
+                                                            {{ $product_price->price }}
+                                                        </span>
+
+                                                        <span class="jst-pr-pct-tag">
+                                                            {{ round($value->discount) }}% Off
+                                                        </span>
+                                                    @endif
+                                                @endif
+                                            </div>
+
+                                            <!-- BUTTON -->
+                                            @if ($product_price && $product_price->quantity > 0)
+                                                <a href="{{ route('product.details.show', $value->id) }}"
+                                                    class="btn jst-pr-buy-btn">
+                                                    Add to cart
+                                                </a>
+                                            @else
+                                                <span class="btn jst-pr-buy-btn1"
+                                                    style="cursor:not-allowed; opacity:0.6;">
+                                                    Out of stock
+                                                </span>
+                                            @endif
+
+                                        </div>
+
+                                    </div>
+
                                 </div>
                             </div>
                         @endforeach
+
                     </div>
                 </div>
             </div>

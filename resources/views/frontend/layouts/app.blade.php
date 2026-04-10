@@ -274,26 +274,46 @@
             },
         });
 
+        // $('.product-slider1').owlCarousel({
+        //     loop: true,
+        //     margin: 10,
+        //     nav: true,
+        //     autoplay: false,
+
+        //     smartSpeed: 1000,
+
+        //     autoplayTimeout: 4000,
+        //     responsive: {
+        //         0: {
+        //             items: 1,
+        //         },
+        //         600: {
+        //             items: 1.7,
+        //         },
+        //         1000: {
+        //             items: 3.2,
+        //         },
+        //     },
+        // });
         $('.product-slider1').owlCarousel({
             loop: true,
             margin: 10,
             nav: true,
             autoplay: false,
-
+            autoWidth: true,
             smartSpeed: 1000,
-
             autoplayTimeout: 4000,
             responsive: {
                 0: {
-                    items: 1,
+                    items: 1
                 },
                 600: {
-                    items: 1.7,
+                    items: 1.7
                 },
                 1000: {
-                    items: 3.2,
-                },
-            },
+                    items: 3.2
+                }
+            }
         });
 
         $(".testimonial-carousel").owlCarousel({

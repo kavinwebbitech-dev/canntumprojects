@@ -97,167 +97,151 @@
     </style>
 
     <section class="product_list">
-        @php $catname = App\Models\ProductCategory::where('id', $cat_id)->first(); @endphp
+
+        @php
+            $catname = App\Models\ProductCategory::where('id', $cat_id)->first();
+        @endphp
+
         <div class="container">
+
+            <!-- Breadcrumb -->
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ $catname->name }}</li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('home') }}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        {{ $catname->name }}
+                    </li>
                 </ol>
             </nav>
 
+            <!-- Title -->
             <div class="filter_box">
-                <form id="sort-form" action="" method="GET">
-                    <div class="row gy-4 align-items-center">
-                        <div class="col-lg-6">
-                            <h1 class="product_title">{{ $catname->name }}</h1>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row gx-2 gy-3">
-                                <div class="col-lg-4 col-md-4 col-6"></div>
-                                <div class="col-lg-4 col-md-4 col-6"></div>
-                            </div>
-                        </div>
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="product_title">{{ $catname->name }}</h1>
                     </div>
-                </form>
+                </div>
             </div>
 
-            <div class="list_product">
-                <div class="mt-3">
-                    <div class="product_collections">
-                        <div class="row gy-4">
+            <!-- Products -->
+            <div class="list_product mt-5">
+                <div style="padding: 0 5px" class="row gy-4">
 
-                            @if ($product && count($product) > 0)
-                                @foreach ($product as $key => $item)
-                                    <div class="col-lg-3 col-md-4">
-                                        <div class="card">
-                                            <div class="card_img">
-                                                <a href="{{ route('product.details.show', $item->id) }}">
-                                                    <img src="{{ url('public/product_images/' . $item->product_img) }}"
-                                                        alt="">
-                                                </a>
+                    @if ($product && count($product) > 0)
+                        @foreach ($product as $item)
+                            <div class="col-lg-3 col-md-4 col-sm-6 d-flex justify-content-center">
 
-                                                @if ($item->new_arrival == 1)
-                                                    <div class="trending_bg">
-                                                        <img src="{{ url('') }}/assets/images/cart-badge.svg"
-                                                            alt="">New Arrival
-                                                    </div>
+                                <div class="v-card-outer">
+
+                                    <!-- IMAGE -->
+                                    <div class="v-card-media-frame">
+
+                                        <!-- Wishlist -->
+                                        <button class="v-card-wishlist-btn add-wishlist-btn"
+                                            data-product-id="{{ $item->id }}" id="add-wishlist-btn-{{ $item->id }}">
+                                            <img src="https://img.icons8.com/material-outlined/24/000000/like--v1.png"
+                                                class="v-card-wishlist-icon">
+                                        </button>
+
+                                        <a id="adding-wishlist-{{ $item->id }}" class="v-card-wishlist-btn added-msg"
+                                            style="display:none;">
+                                            ❤️
+                                        </a>
+
+                                        <!-- Badge -->
+                                        @if ($item->new_arrival == 1)
+                                            <div class="v-card-badge-layer">
+                                                <img src="{{ url('') }}/assets/images/cart-badge.svg"
+                                                    class="v-card-badge-icon">
+                                                <p class="v-card-badge-text">New Arrival</p>
+                                            </div>
+                                        @endif
+
+                                        <!-- Product Image -->
+                                        <a href="{{ route('product.details.show', $item->id) }}">
+                                            <img src="{{ url('public/product_images/' . $item->product_img) }}"
+                                                class="v-card-main-img">
+                                        </a>
+
+                                    </div>
+
+                                    <!-- INFO -->
+                                    <div class="v-card-info-block">
+
+                                        <h5 class="v-card-headline text-truncate">
+                                            <a href="{{ route('product.details.show', $item->id) }}">
+                                                {{ $item->product_name }}
+                                            </a>
+                                        </h5>
+
+                                        @php
+                                            $product_price = App\Models\ProductDetail::where(
+                                                'product_id',
+                                                $item->id,
+                                            )->first();
+                                            $price = $product_price
+                                                ? $product_price->price -
+                                                    ($product_price->price * $item->discount) / 100
+                                                : 0;
+                                        @endphp
+
+                                        <div class="v-card-action-row">
+
+                                            <!-- PRICE -->
+                                            <div class="v-card-val-stack">
+                                                <span class="v-card-active-price">
+                                                    Rs. {{ round($price) }}
+                                                </span>
+
+                                                @if (isset($product_price->price) && $item->discount)
+                                                    <span class="v-card-was-price">
+                                                        {{ $product_price->price }}
+                                                    </span>
                                                 @endif
 
-                                                <a href="javascript:void(0);" data-product-id="{{ $item->id }}"
-                                                    id="add-wishlist-btn-{{ $item->id }}"
-                                                    class="whislist_icon add-wishlist-btn add-to-wishlist-button">
-                                                    <i class="bi bi-heart"></i>
-                                                </a>
-
-                                                <a id="adding-wishlist-{{ $item->id }}" class="whislist_icon added-msg"
-                                                    style="display: none">
-                                                    <i class="bi bi-heart-fill"></i>
-                                                </a>
+                                                @if ($item->discount)
+                                                    <span class="v-card-pct-tag">
+                                                        {{ round($item->discount) }}% Off
+                                                    </span>
+                                                @endif
                                             </div>
 
-                                            <div class="card_body">
-                                                <h5 class="card_title text-truncate">
-                                                    <a href="{{ route('product.details.show', $item->id) }}">
-                                                        {{ $item->product_name }}
-                                                    </a>
-                                                </h5>
-                                                <div class="row align-items-center">
-                                                    <div class="col-7">
-                                                        @php
-                                                            $product_price = App\Models\ProductDetail::where(
-                                                                'product_id',
-                                                                $item->id,
-                                                            )
-                                                                ->limit(1)
-                                                                ->get()
-                                                                ->first();
-                                                            $price = $product_price
-                                                                ? $product_price->price -
-                                                                    $product_price->price * ($item->discount / 100)
-                                                                : 0;
-                                                        @endphp
+                                            <!-- BUTTON -->
+                                            @if ($product_price && $product_price->quantity != 0)
+                                                <a href="{{ route('product.details.show', $item->id) }}"
+                                                    class="btn v-card-buy-btn add-to-cart-button"
+                                                    data-product-id="{{ $item->id }}"
+                                                    id="add-cart-btnn-{{ $item->id }}">
+                                                    Add to cart
+                                                </a>
+                                            @else
+                                                <span class="v-card-buy-btn" style="opacity:.6;">
+                                                    Out of stock
+                                                </span>
+                                            @endif
 
-                                                        <p class="card_text">
-                                                            Rs. {{ round($price) ?? '' }}
-                                                            @if (isset($product_price->price) && $item->discount)
-                                                                <span
-                                                                    class="amount_strike">{{ $product_price->price }}
-                                                                </span>
-                                                            @endif
-                                                            &nbsp;
-                                                            @if ($item->discount)
-                                                                <span class="offer_text">
-                                                                    {{ round($item->discount) }} % Off
-                                                                </span>
-                                                            @endif
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        <p class="text-end">
-                                                            @if ($product_price && $product_price->quantity != 0 && $product_price->quantity != '')
-                                                                <a href="{{ route('product.details.show', $item->id) }}"
-                                                                    data-product-id="{{ $item->id }}"
-                                                                    id="add-cart-btnn-{{ $item->id }}"
-                                                                    class="btn shop-btn add-cart-btn add-to-cart-button">
-                                                                    Add to Cart
-                                                                </a>
-                                                                <a href="javascript:void(0);"
-                                                                    data-product-id="{{ $item->id }}"
-                                                                    id="adding-cart-{{ $item->id }}"
-                                                                    style="display: none" class="btn shop-btn">
-                                                                    <i class="fas fa-shopping-cart"></i> Added
-                                                                </a>
-                                                            @else
-                                                                <div class="out-of-stock text-center">
-                                                                    <a class="cart-btn"
-                                                                        style="background: white; color: #272727;border: 1px solid #272727; font-size:12px !important; padding:7px 6px">Out of
-                                                                        stock</a>
-                                                                </div>
-                                                            @endif
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
+
                                     </div>
-                                @endforeach
-                            @else
-                                {{-- Empty Products State --}}
-                                <div class="col-12">
-                                    <div class="empty-products">
-                                        <i class="bi bi-bag-x"></i>
-                                        <h4>Launching soon..!</h4>
-                                        <p>There are no products available in this category yet.</p>
-                                        <a href="{{ route('home') }}" class="btn"
-                                            style="border: 1px solid #001E40; color: #001E40 !important;">Continue
-                                            Shopping</a>
-                                    </div>
+
                                 </div>
-                            @endif
 
+                            </div>
+                        @endforeach
+                    @else
+                        <!-- EMPTY -->
+                        <div class="col-12 text-center">
+                            <h4>Launching soon..!</h4>
+                            <p>No products available</p>
                         </div>
-                    </div>
+                    @endif
+
                 </div>
             </div>
-        </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="productDetailsModal" tabindex="-1" role="dialog"
-            aria-labelledby="productDetailsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="productDetailsModalLabel">Product Details</h5>
-                        <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="productDetailsBody">
-                        <!-- Product details will be populated here -->
-                    </div>
-                </div>
-            </div>
         </div>
-
     </section>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

@@ -414,9 +414,26 @@ color: #fff !important;
 
                         <h2 class="detail_title mb-0">{{ $product->product_name ?? '' }}</h2>
                         <div class="d-flex align-items-center gap-3">
-                            <h3 class="product_rate mb-0">₹ {{ round($discountedPrice) }}</h3>
-                             @if ($price && $product->discount)
-                                <span class="amount_strike text-decoration-line-through">{{ $price }}</span>
+                           @php
+                            function formatIndianCurrency($number) {
+                                $number = (string) round($number);
+                                $len = strlen($number);
+                                if ($len <= 3) return $number;
+
+                                $last3 = substr($number, -3);
+                                $rest = substr($number, 0, $len - 3);
+                                return preg_replace("/\B(?=(\d{2})+(?!\d))/", ",", $rest) . "," . $last3;
+                            }
+                            @endphp
+
+                            <h3 class="product_rate mb-0">
+                                ₹ {{ formatIndianCurrency($discountedPrice) }}
+                            </h3>
+
+                            @if ($price && $product->discount)
+                                <span class="amount_strike text-decoration-line-through">
+                                    ₹ {{ formatIndianCurrency($price) }}
+                                </span>
                             @endif
                             @if ($product->discount)
                                 <span class="offer-amount text-success">{{ round($product->discount) }}% Off</span>
