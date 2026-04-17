@@ -88,9 +88,9 @@ class orderController extends Controller
             $calculatedSubtotal += $lineSubtotal;
 
             // ✅ GST from ORIGINAL PRICE (NO qty multiplication)
-            if ($gstPercent > 0 && $originalPrice > 0) {
+            if ($gstPercent > 0 && $offerPrice > 0) {
 
-                $gstPerItem = ($originalPrice * $gstPercent) / (100 + $gstPercent);
+                $gstPerItem = ($offerPrice * $gstPercent) / (100 + $gstPercent);
 
                 // ❗ NOT multiplying by qty (as per your rule)
                 $lineGst = $gstPerItem;

@@ -6,7 +6,7 @@
     <title>Tax Invoice</title>
 
     <style>
-        body {
+         body {
             font-family: DejaVu Sans, sans-serif !important;
             font-size: 12px;
             color: #001E40;
@@ -89,13 +89,14 @@
 
     <img src="https://i.ibb.co/8Lh0gzWg/canntum-copy-3.png" class="watermark">
 
+    {{-- HEADER --}}
     <table class="no-border">
         <tr>
             <td width="70%">
                 <div class="header-title">CANNTUM EMPORIUM</div>
                 377, Cross Cut Rd, Coimbatore<br>
                 Tamil Nadu – 641012<br>
-                Phone: +91 6374723745<br>
+                Phone: +91 6374723745
             </td>
 
             <td width="30%" class="right">
@@ -107,35 +108,8 @@
 
     <br>
 
+    {{-- SHIPPING + INVOICE --}}
     <table>
-        {{-- <tr>
-            <td width="50%" valign="top">
-
-                <span class="sub-title">Shipping Details</span><br><br><br>
-
-                <strong>{{ $shipping_address->shipping_name ?? 'N/A' }}</strong><br>
-                {{ $shipping_address->shipping_address ?? '' }}<br>
-                {{ $shipping_address->city ?? '' }},
-                {{ $shipping_address->state ?? '' }} -
-                {{ $shipping_address->pincode ?? '' }}<br>
-
-                Phone: {{ $shipping_address->shipping_phone ?? '' }}<br>
-                Email: {{ $shipping_address->shipping_email ?? '' }}
-
-            </td>
-
-            <td width="50%" valign="top">
-
-                <span class="sub-title">Invoice Details</span><br><br><br><hr>
-
-                Invoice No : <strong>{{ $invoiceNumber }}</strong><br>
-                Invoice Date : {{ date('d-m-Y', strtotime($order->created_at)) }}<br>
-                Payment Mode : {{ strtoupper($order->payment_method) }}<br>
-                Place of Supply : {{ $shipping_address->state ?? '' }}<br>
-                State Code : {{ $shipping_address->state_code ?? '' }}
-
-            </td>
-        </tr> --}}
         <tr class="no-gap-row">
             <td class="rrow" width="50%" valign="top" style="padding-bottom: 10px;">
                 <div style="border-bottom: 1px solid #000; margin-bottom: 10px;  padding-bottom: 5px;">
@@ -182,53 +156,45 @@
         $isTamilNadu = $stateName == 'tamil nadu';
     @endphp
 
+    {{-- TABLE --}}
     <table>
         <thead>
             <tr class="section-title center">
-                <th width="5%">S.No</th>
+                <th>S.No</th>
                 <th>Description</th>
-                <th width="5%">Qty</th>
-                <th width="12%">Rate</th>
-                <th width="12%">Taxable</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                {{-- <th>Taxable Value</th> --}}
                 @if ($isTamilNadu)
-                    <th width="10%">CGST</th>
-                    <th width="10%">SGST</th>
+                    <th>CGST</th>
+                    <th>SGST</th>
                 @else
-                    <th width="20%">IGST</th>
+                    <th>IGST</th>
                 @endif
-                <th width="15%">Total</th>
+                <th>Total</th>
             </tr>
         </thead>
 
         <tbody>
-            @php
-                $productIds = collect($order_details)->pluck('product_id')->toArray();
-                $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
-            @endphp
             @foreach ($order_details as $key => $item)
                 @php
                     $gstPercent = (float) ($item->product_gst ?? 18);
-                    $offerPrice = (float) $item->offer_price;
+                    $price = (float) $item->offer_price;
                     $qty = (int) $item->quantity;
 
-                    // ✅ Get ORIGINAL PRICE
-                    $product = $products[$item->product_id] ?? null;
-                    $originalPrice = (float) ($product->orginal_rate ?? 0);
+                    // ✅ Total (inclusive)
+                    $rowTotal = $price * $qty;
 
-                    // ✅ Subtotal (offer price × qty)
-                    $taxable = $offerPrice * $qty;
-                    $subTotal += $taxable;
-
-                    // ✅ GST from ORIGINAL PRICE (NO qty multiplication)
-                    if ($gstPercent > 0 && $originalPrice > 0) {
-                        $gstPerItem = ($originalPrice * $gstPercent) / (100 + $gstPercent);
-                        $gstAmount = $gstPerItem; // ❗ NO * qty
+                    // ✅ Extract GST
+                    if ($gstPercent > 0) {
+                        $baseAmount = $rowTotal / (1 + $gstPercent / 100);
+                        $gstAmount = $rowTotal - $baseAmount;
                     } else {
+                        $baseAmount = $rowTotal;
                         $gstAmount = 0;
                     }
 
-                    // ✅ Row total (NO GST add)
-                    $rowTotal = $taxable;
+                    $subTotal += $baseAmount;
 
                     if ($isTamilNadu) {
                         $cgst = $gstAmount / 2;
@@ -245,8 +211,8 @@
                     <td class="center">{{ $key + 1 }}</td>
                     <td>{{ $item->productname }}</td>
                     <td class="center">{{ $qty }}</td>
-                    <td class="right">{{ number_format($offerPrice, 2) }}</td>
-                    <td class="right">{{ number_format($taxable, 2) }}</td>
+                    <td class="right">{{ number_format($price, 2) }}</td>
+                    {{-- <td class="right">{{ number_format($baseAmount, 2) }}</td> --}}
 
                     @if ($isTamilNadu)
                         <td class="right">{{ number_format($cgst, 2) }}</td>
@@ -254,9 +220,8 @@
                     @else
                         <td class="right">{{ number_format($igst, 2) }}</td>
                     @endif
-                    <td class="right" style="font-weight:bold;">
-                        {{ number_format($rowTotal, 2) }}
-                    </td>
+
+                    <td class="right"><strong>{{ number_format($rowTotal, 2) }}</strong></td>
                 </tr>
             @endforeach
         </tbody>
@@ -266,11 +231,14 @@
 
     @php
         $coupon = (float) str_replace(',', '', $order->coupon_discount ?? 0);
-        $totalTax = $isTamilNadu ? $totalCGST + $totalSGST : $totalIGST;
         $shippingCharge = (float) ($order->shipping_charge ?? 0);
-        $grandTotal = $subTotal + $shippingCharge - $coupon;
+
+        $totalTax = $isTamilNadu ? $totalCGST + $totalSGST : $totalIGST;
+
+        $grandTotal = $subTotal + $totalTax + $shippingCharge - $coupon;
     @endphp
 
+    {{-- SUMMARY --}}
     <table width="45%" align="right">
         <tr>
             <td>Taxable Amount</td>
@@ -297,24 +265,23 @@
             <td>Coupon Discount (-)</td>
             <td class="right">₹ {{ number_format($coupon, 2) }}</td>
         </tr>
+
         <tr>
             <td>Shipping Charge</td>
             <td class="right">
-                @if ($shippingCharge > 0)
-                    ₹ {{ number_format($shippingCharge, 2) }}
-                @else
-                    FREE
-                @endif
+                {{ $shippingCharge > 0 ? '₹ ' . number_format($shippingCharge, 2) : 'FREE' }}
             </td>
         </tr>
+
         <tr class="total-box">
             <td>Grand Total</td>
             <td class="right">₹ {{ number_format($grandTotal, 2) }}</td>
         </tr>
     </table>
-    <br>
 
-    <table style="margin-top:0px; position :relative; top: 300px; bottom: auto;">
+    <br><br>
+
+    <table style="margin-top:0px; position :relative; top: 280px; bottom: auto;">
         <tr>
             <td colspan="2" style="font-weight:500; background:#f5f5f5;">
                 Terms & Conditions
