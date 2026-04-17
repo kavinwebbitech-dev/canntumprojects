@@ -32,6 +32,35 @@ class orderController extends Controller
 
         return view('admin.order.index', compact('orders'));
     }
+    // public function adminOrderDetails($id)
+    // {
+    //     $orders = Order::where('id', $id)->first();
+    //     $orders_details = OrderDetail::where('order_id', $id)->get();
+
+    //     $calculatedSubtotal = 0;
+    //     $calculatedGst = 0;
+
+    //     foreach ($orders_details as $item) {
+    //         $price = (float)$item->offer_price;
+    //         $qty = (int)$item->quantity;
+    //         $gstPercent = (float)($item->product_gst ?? 0);
+
+    //         // Taxable amount (Price * Qty)
+    //         $lineTaxable = $price * $qty;
+    //         $calculatedSubtotal += $lineTaxable;
+
+    //         // GST amount for this line
+    //         $lineGst = ($lineTaxable * $gstPercent) / 100;
+    //         $calculatedGst += $lineGst;
+    //     }
+
+    //     // Use the stored GST from order table if the calculation is 0, 
+    //     // otherwise use the freshly calculated one for accuracy.
+    //     $finalGst = ($calculatedGst > 0) ? $calculatedGst : (float)($orders->gst ?? 0);
+
+    //     return view('admin.order.orders_details', compact('orders', 'orders_details', 'calculatedSubtotal', 'finalGst'));
+    // }
+
     public function adminOrderDetails($id)
     {
         $orders = Order::where('id', $id)->first();
@@ -40,25 +69,46 @@ class orderController extends Controller
         $calculatedSubtotal = 0;
         $calculatedGst = 0;
 
+        // preload products (performance)
+        $productIds = $orders_details->pluck('product_id')->toArray();
+        $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
+
         foreach ($orders_details as $item) {
-            $price = (float)$item->offer_price;
+
+            $offerPrice = (float)$item->offer_price;
             $qty = (int)$item->quantity;
-            $gstPercent = (float)($item->product_gst ?? 0);
+            $gstPercent = (float)($item->product_gst ?? 18);
 
-            // Taxable amount (Price * Qty)
-            $lineTaxable = $price * $qty;
-            $calculatedSubtotal += $lineTaxable;
+            // ✅ get original price from product
+            $product = $products[$item->product_id] ?? null;
+            $originalPrice = (float)($product->orginal_rate ?? 0);
 
-            // GST amount for this line
-            $lineGst = ($lineTaxable * $gstPercent) / 100;
+            // ✅ Subtotal (offer price × qty)
+            $lineSubtotal = $offerPrice * $qty;
+            $calculatedSubtotal += $lineSubtotal;
+
+            // ✅ GST from ORIGINAL PRICE (NO qty multiplication)
+            if ($gstPercent > 0 && $originalPrice > 0) {
+
+                $gstPerItem = ($originalPrice * $gstPercent) / (100 + $gstPercent);
+
+                // ❗ NOT multiplying by qty (as per your rule)
+                $lineGst = $gstPerItem;
+            } else {
+                $lineGst = 0;
+            }
+
             $calculatedGst += $lineGst;
         }
 
-        // Use the stored GST from order table if the calculation is 0, 
-        // otherwise use the freshly calculated one for accuracy.
-        $finalGst = ($calculatedGst > 0) ? $calculatedGst : (float)($orders->gst ?? 0);
+        $finalGst = $calculatedGst;
 
-        return view('admin.order.orders_details', compact('orders', 'orders_details', 'calculatedSubtotal', 'finalGst'));
+        return view('admin.order.orders_details', compact(
+            'orders',
+            'orders_details',
+            'calculatedSubtotal',
+            'finalGst'
+        ));
     }
 
     // public function updateStatus(Request $request)

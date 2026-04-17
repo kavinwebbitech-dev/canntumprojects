@@ -53,15 +53,14 @@ class PaymentController extends Controller
             $lineSubtotal = $price * $qty;
             // dd($lineSubtotal,$qty,$price);
             $subtotal += $lineSubtotal;
-            $lineGst = ($lineSubtotal * $gstPercent) / 100;
-            $gst += $lineGst;
-            $total_amount += ($lineSubtotal + $lineGst);
+            // $lineGst = ($lineSubtotal * $gstPercent) / 100;
+            // $gst += $lineGst;
+            $total_amount += ($lineSubtotal);
         }
 
         $shipping_charge = (float)$request->shipping_charge;
         $coupon_discount = (float)$request->coupon_discount;
         $total_amount = ($total_amount + $shipping_charge) - $coupon_discount;
-        // dd($total_amount);
         $payment_method = $request->payment_method;
 
         // -----------------------------

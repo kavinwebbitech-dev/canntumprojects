@@ -86,7 +86,21 @@
                     <span class="nav-text">Dashboard</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('admin.banner') ? 'mm-active' : '' }}">
+                <a href="{{ route('admin.banner.show') }}"
+                    class="{{ request()->routeIs('admin.banner.show') ? 'active' : '' }}">
+                    <i class="fas fa-image"></i> <!-- ✅ Banner Icon -->
+                    Banner Image
+                </a>
+            </li>
 
+            <li class="{{ request()->routeIs('admin.offer_image') ? 'mm-active' : '' }}">
+                <a href="{{ route('admin.offer_image') }}"
+                    class="{{ request()->routeIs('admin.offer_image') ? 'active' : '' }}">
+                    <i class="fas fa-gift"></i>
+                    <span class="nav-text">Offer Image</span>
+                </a>
+            </li>
             <li class="{{ request()->routeIs('admin.users') ? 'mm-active' : '' }}">
                 <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
@@ -115,7 +129,7 @@
                     </li>
                 </ul>
             </li>
-           
+
             <li class="{{ request()->routeIs('admin.shipping_charge*') ? 'mm-active' : '' }}">
                 <a href="{{ route('admin.shipping_charge') }}"
                     class="{{ request()->routeIs('admin.shipping_charge*') ? 'active' : '' }}">
@@ -171,17 +185,20 @@
             </li> --}}
 
             {{-- Website Setup --}}
-            <li class="{{ request()->routeIs('admin.banner.*') ? 'mm-active' : '' }}">
+            {{-- <li class="{{ request()->routeIs('admin.banner.*') ? 'mm-active' : '' }}">
                 <a class="has-arrow" href="#setup" data-bs-toggle="collapse"
                     aria-expanded="{{ request()->routeIs('admin.banner.*') ? 'true' : 'false' }}">
                     <i class="fas fa-globe"></i>
                     <span class="nav-text">Website Setup</span>
                 </a>
                 <ul class="collapse {{ request()->routeIs('admin.banner.*') ? 'show' : '' }}" id="setup">
-                    <li><a href="{{ route('admin.banner.show') }}"
-                            class="{{ request()->routeIs('admin.banner.show') ? 'active' : '' }}">Banner Image</a></li>
+                    <li>
+                        <a href="{{ route('admin.banner.show') }}"
+                            class="{{ request()->routeIs('admin.banner.show') ? 'active' : '' }}">Banner Image</a>
+                    </li>
                 </ul>
-            </li>
+            </li> --}}
+
 
             <li class="{{ request()->routeIs('admin.profile') ? 'mm-active' : '' }}">
                 <a href="{{ route('admin.profile') }}"

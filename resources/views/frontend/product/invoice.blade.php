@@ -201,17 +201,34 @@
         </thead>
 
         <tbody>
+            @php
+                $productIds = collect($order_details)->pluck('product_id')->toArray();
+                $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
+            @endphp
             @foreach ($order_details as $key => $item)
                 @php
-                    $gstPercent = (float) ($item->product_gst ?? 0);
-                    $price = (float) $item->offer_price;
+                    $gstPercent = (float) ($item->product_gst ?? 18);
+                    $offerPrice = (float) $item->offer_price;
                     $qty = (int) $item->quantity;
 
-                    $taxable = $price * $qty;
-                    $gstAmount = ($taxable * $gstPercent) / 100;
+                    // ✅ Get ORIGINAL PRICE
+                    $product = $products[$item->product_id] ?? null;
+                    $originalPrice = (float) ($product->orginal_rate ?? 0);
 
-                    $rowTotal = $taxable + $gstAmount;
+                    // ✅ Subtotal (offer price × qty)
+                    $taxable = $offerPrice * $qty;
                     $subTotal += $taxable;
+
+                    // ✅ GST from ORIGINAL PRICE (NO qty multiplication)
+                    if ($gstPercent > 0 && $originalPrice > 0) {
+                        $gstPerItem = ($originalPrice * $gstPercent) / (100 + $gstPercent);
+                        $gstAmount = $gstPerItem; // ❗ NO * qty
+                    } else {
+                        $gstAmount = 0;
+                    }
+
+                    // ✅ Row total (NO GST add)
+                    $rowTotal = $taxable;
 
                     if ($isTamilNadu) {
                         $cgst = $gstAmount / 2;
@@ -228,7 +245,7 @@
                     <td class="center">{{ $key + 1 }}</td>
                     <td>{{ $item->productname }}</td>
                     <td class="center">{{ $qty }}</td>
-                    <td class="right">{{ number_format($price, 2) }}</td>
+                    <td class="right">{{ number_format($offerPrice, 2) }}</td>
                     <td class="right">{{ number_format($taxable, 2) }}</td>
 
                     @if ($isTamilNadu)
@@ -237,7 +254,6 @@
                     @else
                         <td class="right">{{ number_format($igst, 2) }}</td>
                     @endif
-
                     <td class="right" style="font-weight:bold;">
                         {{ number_format($rowTotal, 2) }}
                     </td>
@@ -252,7 +268,7 @@
         $coupon = (float) str_replace(',', '', $order->coupon_discount ?? 0);
         $totalTax = $isTamilNadu ? $totalCGST + $totalSGST : $totalIGST;
         $shippingCharge = (float) ($order->shipping_charge ?? 0);
-        $grandTotal = $subTotal + $totalTax + $shippingCharge - $coupon;
+        $grandTotal = $subTotal + $shippingCharge - $coupon;
     @endphp
 
     <table width="45%" align="right">
@@ -261,21 +277,21 @@
             <td class="right">₹ {{ number_format($subTotal, 2) }}</td>
         </tr>
 
-        {{-- @if ($isTamilNadu)
+        @if ($isTamilNadu)
             <tr>
-                <td>Total CGST</td>
+                <td>CGST</td>
                 <td class="right">₹ {{ number_format($totalCGST, 2) }}</td>
             </tr>
             <tr>
-                <td>Total SGST</td>
+                <td>SGST</td>
                 <td class="right">₹ {{ number_format($totalSGST, 2) }}</td>
             </tr>
         @else
             <tr>
-                <td>Total IGST</td>
+                <td>IGST</td>
                 <td class="right">₹ {{ number_format($totalIGST, 2) }}</td>
             </tr>
-        @endif --}}
+        @endif
 
         <tr>
             <td>Coupon Discount (-)</td>
@@ -298,7 +314,7 @@
     </table>
     <br>
 
-    <table style="margin-top:0px; position :relative; top: 75px; bottom: auto;">
+    <table style="margin-top:0px; position :relative; top: 300px; bottom: auto;">
         <tr>
             <td colspan="2" style="font-weight:500; background:#f5f5f5;">
                 Terms & Conditions

@@ -276,6 +276,10 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/admin/reviews/store', 'store')->name('admin.reviews.store');
         Route::post('/admin/reviews/update', 'update')->name('admin.reviews.update');
         Route::post('/admin/reviews/delete', 'delete')->name('admin.reviews.delete');
+        Route::get('admin/offer-image', 'offerImage')->name('admin.offer_image');
+        Route::put('admin/offer-image-update', 'offerImageUpdate')->name('admin.offer_image.update');
+        Route::post('admin/offer-image-add', 'offerImagestore')->name('admin.offer_image.store');
+        Route::get('admin/offer-image-delete/{id}', 'offerImageDelete')->name('admin.offer_image.delete');
     });
 
     Route::controller(CountryController::class)->group(function () {

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Country;
 use App\Models\State;
 use App\Models\City;
+use App\Models\OfferImage;
 use App\Models\Section;
 use App\Models\ProductSubCategory;
 use App\Models\ProductCategory;
@@ -259,7 +260,48 @@ class AdminController extends Controller
         return response()->json(['message' => 'Banner image updated successfully.']);
     }
 
+    public function offerImage()
+    {
+        $offer_images = OfferImage::latest()->get();
+        return view('admin.offer_images.index', compact('offer_images'));
+    }
 
+    public function offerImagestore(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $name = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('offer_images'), $name);
+
+            OfferImage::create([
+                'image' => $name
+            ]);
+        }
+
+        return response()->json(['message' => 'Offer image has been added successfully.']);
+    }
+
+    public function offerImageupdate(Request $request)
+    {
+        $offer = OfferImage::find($request->id);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $name = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('offer_images'), $name);
+
+            $offer->image = $name;
+            $offer->save();
+        }
+
+        return response()->json(['message' => 'Updated successfully']);
+    }
+
+    public function offerImagedelete($id)
+    {
+        OfferImage::find($id)->delete();
+        return back()->with('success', 'Offer image deleted successfully.');
+    }
 
 
     public function regUsers(Request $request)

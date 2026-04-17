@@ -268,9 +268,9 @@
 
                             foreach ($orders_details as $detail) {
                                 $itemSubtotal = $detail->offer_price * $detail->quantity;
-                                $itemGst = $itemSubtotal * ($detail->product_gst / 100);
+                                // $itemGst = $itemSubtotal * ($detail->product_gst / 100);
                                 $subtotal += $itemSubtotal;
-                                $totalGst += $itemGst;
+                                // $totalGst += $itemGst;
                             }
                             $shipping_charge = (float) ($orders->shipping_charge ?? 0);
                             $grandTotal = $subtotal + $totalGst + $shipping_charge - $couponDiscount;

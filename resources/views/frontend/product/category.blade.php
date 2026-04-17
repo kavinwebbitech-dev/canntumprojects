@@ -126,7 +126,7 @@
             </div>
 
             <!-- Products -->
-            <div class="list_product mt-5">
+            <div class="list_product mt-3">
                 <div style="padding: 0 5px" class="row gy-4">
 
                     @if ($product && count($product) > 0)
@@ -138,11 +138,9 @@
                                     <!-- IMAGE -->
                                     <div class="v-card-media-frame">
 
-                                        <!-- Wishlist -->
-                                        <button class="v-card-wishlist-btn add-wishlist-btn"
+                                        <button type="button" class="v-card-wishlist-btn add-wishlist-btn"
                                             data-product-id="{{ $item->id }}" id="add-wishlist-btn-{{ $item->id }}">
-                                            <img src="https://img.icons8.com/material-outlined/24/000000/like--v1.png"
-                                                class="v-card-wishlist-icon">
+                                            <img src="https://img.icons8.com/material-outlined/24/000000/like--v1.png">
                                         </button>
 
                                         <a id="adding-wishlist-{{ $item->id }}" class="v-card-wishlist-btn added-msg"
@@ -294,23 +292,30 @@
                 });
             });
 
-            // Add to Wishlist
-            $('.add-to-wishlist-button').on('click', function() {
+            $(document).on('click', '.add-wishlist-btn', function() {
+
                 var productId = $(this).data('product-id');
+
                 $.ajax({
                     type: 'GET',
                     url: '{{ url('add-to-wishlist') }}/' + productId,
                     success: function() {
+
+                        // Show heart instantly (optional)
                         $("#adding-wishlist-" + productId).show();
                         $("#add-wishlist-btn-" + productId).hide();
-                        window.location.reload();
+
+                        // Reload page after small delay
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 500);
                     },
                     error: function(error) {
                         console.error('Error adding to wishlist:', error);
                     }
                 });
-            });
 
+            });
         });
     </script>
 

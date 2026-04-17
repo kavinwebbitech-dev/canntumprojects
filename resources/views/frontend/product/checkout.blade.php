@@ -61,7 +61,7 @@
         }
     </style>
     @php
-        $totalgst = (float) str_replace(',', '', $total_gst ?? 0);
+        // $totalgst = (float) str_replace(',', '', $total_gst ?? 0);
         $authUserId = Auth::id();
         $getAllAddress = App\Models\Address::where('user_id', $authUserId)->get();
         $getDefaultAddress = $getAllAddress->firstWhere('make_default', 1);
@@ -119,8 +119,8 @@
                                 <select name="state" id="state" class="form-control" required>
                                     <option value="">Select State</option>
                                     @foreach ($states as $state)
-    <option value="{{ $state }}">{{ $state }}</option>
-@endforeach
+                                        <option value="{{ $state }}">{{ $state }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -439,7 +439,7 @@
                                 <div class="d-flex justify-content-between fw-bold fs-5">
                                     <span class="d-flex">Total<p class="mx-1 mt-1">(Incl of all taxes)</p></span>
                                     <span>
-                                        ₹ {{ number_format($subtotal + $totalgst + $shipping_charge - $couponDiscount, 2) }}
+                                        ₹ {{ number_format($subtotal + $shipping_charge - $couponDiscount, 2) }}
                                     </span>
                                 </div>
 
@@ -454,7 +454,7 @@
                                 @endif
                                 <!-- Hidden Inputs -->
                                 <input type="hidden" name="total_amount"
-                                    value="{{ $total + $totalgst - $couponDiscount }}">
+                                    value="{{ $total - $couponDiscount }}">
                                 <input type="hidden" name="shipping_charge" value="{{ $shipping_charge }}">
                                 <input type="hidden" name="coupon_discount"
                                     value="{{ number_format($couponDiscount, 2) }}">

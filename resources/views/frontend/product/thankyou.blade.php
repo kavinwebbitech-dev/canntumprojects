@@ -150,7 +150,7 @@
                                 $avgGstRate = $itemCount > 0 ? round($totalGstRate / $itemCount) : 0;
 
                                 // Fallback to stored GST if calculated is 0
-                                $final_gst = $calculated_gst > 0 ? $calculated_gst : (float) ($order->gst ?? 0);
+                                // $final_gst = $calculated_gst > 0 ? $calculated_gst : (float) ($order->gst ?? 0);
 
                                 // If avgGstRate is still 0 but we have gst amount, derive from amounts
                                 if ($avgGstRate == 0 && $subtotal > 0 && $final_gst > 0) {
@@ -160,11 +160,11 @@
                                 $coupon = (float) ($order->coupon_discount ?? 0);
                                 $shippingCharge = (float) ($order->shipping_charge ?? 0);
 
-                                $finalTotal = $subtotal + $final_gst + $shippingCharge - $coupon;
+                                $finalTotal = $subtotal + $shippingCharge - $coupon;
 
-                                $cgst = $final_gst / 2;
-                                $sgst = $final_gst / 2;
-                                $halfRate = $avgGstRate / 2;
+                                // $cgst = $final_gst / 2;
+                                // $sgst = $final_gst / 2;
+                                // $halfRate = $avgGstRate / 2;
 
                                 $storeState = strtolower(trim('Tamil Nadu'));
                                 $shippingState = strtolower(trim($shipping_address->state ?? ''));

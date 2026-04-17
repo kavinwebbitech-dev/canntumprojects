@@ -674,27 +674,23 @@ color: #fff !important;
                 
             </div><br>
             <div class="row mt-4 gap-2 gap-lg-0">
-
-                <!-- LEFT: FULL HEIGHT IMAGE -->
                <div class="col-md-6">
                     <div class="left-sticky-image">
                         @php
-                            $img = !empty($productDetail->gallery_images) ? json_decode($productDetail->gallery_images, true) : [];
+                            $img = $productDetail->gallery_images;
                         @endphp
 
-                        {{-- Check if $img is an array AND has at least one image --}}
-                        @if (is_array($img) && count($img) > 0 && !empty($img[0]))
-                            <img src="{{ url('public/gallery_images/' . $img[0]) }}"
-                                id="productDetailSideImage1232" 
-                                style="object-fit: inherit; width: 100%; height: 400px !important">
+                        @if (!empty($img))
+                            <img src="{{ url('public/gallery_images/' . $img) }}"
+                                id="productDetailSideImage1232"
+                                style="object-fit: inherit; width: 100%; height: 500px !important">
                         @else
-                            {{-- Fallback: Show the main product image if gallery is empty --}}
                             <img src="{{ url('public/product_images/' . $product->product_img) }}"
-                                id="productDetailSideImage1232" 
+                                id="productDetailSideImage1232"
                                 style="object-fit: inherit; width: 100%; height: 500px !important">
                         @endif
                     </div>
-            </div>
+                </div>
 
                 <!-- RIGHT: ACCORDION -->
                <div class="col-md-6">

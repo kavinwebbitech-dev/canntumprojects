@@ -259,30 +259,40 @@
                 $coupon = (float)str_replace(',', '', $orders->coupon_discount ?? 0);
                 
                 $shipping = (float)($orders->shipping_charge ?? 0);
-                $grandTotal = ($calculatedSubtotal + $finalGst + $shipping) - $coupon;
+                $grandTotal = ($calculatedSubtotal + $shipping) - $coupon;
             @endphp
             
             <table class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 <tbody>
                     <tr>
-                        <td>Taxable Amount (Subtotal)</td>
+                        <td>Subtotal (Inclusive of GST)</td>
                         <td style="text-align: right;"> ₹{{ number_format($calculatedSubtotal, 2) }} </td> 
                     </tr>
 
-                    @if($isTamilNadu)
-                        <tr>
-                            <td>CGST</td>
-                            <td style="text-align: right;"> ₹{{ number_format($finalGst / 2, 2) }} </td> 
-                        </tr>
-                        <tr>
-                            <td>SGST</td>
-                            <td style="text-align: right;"> ₹{{ number_format($finalGst / 2, 2) }} </td> 
-                        </tr>
-                    @else
-                        <tr>
-                            <td>IGST</td>
-                            <td style="text-align: right;"> ₹{{ number_format($finalGst, 2) }} </td> 
-                        </tr>
+                    @if($finalGst > 0)
+
+                        @if($isTamilNadu)
+                            <tr>
+                                <td>CGST </td>
+                                <td style="text-align: right;">
+                                    ₹{{ number_format($finalGst / 2, 2) }}
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td>SGST </td>
+                                <td style="text-align: right;">
+                                    ₹{{ number_format($finalGst / 2, 2) }}
+                                </td> 
+                            </tr>
+                        @else
+                            <tr>
+                                <td>IGST</td>
+                                <td style="text-align: right;">
+                                    ₹{{ number_format($finalGst, 2) }}
+                                </td> 
+                            </tr>
+                        @endif
+
                     @endif
 
                     @if($coupon > 0)

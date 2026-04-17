@@ -570,7 +570,7 @@
                                             )->first();
                                         @endphp
 
-                                       <div class="item">
+                                        <div class="item">
                                             <div class="card jst-pr-card-outer">
 
                                                 <!-- IMAGE -->
@@ -583,7 +583,8 @@
 
                                                     <div class="jst-pr-badge-layer">
                                                         <img class="badge-imgg"
-                                                            src="{{ url('assets/images/cart-badge.svg') }}" alt="">
+                                                            src="{{ url('assets/images/cart-badge.svg') }}"
+                                                            alt="">
                                                         <p class="badge-p">Trending</p>
                                                     </div>
                                                 </div>
@@ -656,23 +657,40 @@
         </div>
     </section>
 
+    {{-- <section class="divider_section animate__animated animate__fadeIn" data-delay="2s">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-12">
+                    <div class="card mens_collection">
+                        <div class="row g-0">
+                            <div class="col-md-12 order-md-1 order-0">
+                                <div class="card_img">
+                                    <img src="<?php echo url(''); ?>/assets/images/canntum_banner.png" alt="...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> --}}
+    @php
+        $offer = \App\Models\OfferImage::latest()->first();
+    @endphp
+
     <section class="divider_section animate__animated animate__fadeIn" data-delay="2s">
         <div class="container">
             <div class="row gy-4">
                 <div class="col-lg-12">
                     <div class="card mens_collection">
                         <div class="row g-0">
-                            <div class="col-md-6 order-md-0 order-1">
-                                <div class="card_body">
-                                    <div>
-                                        <h4 class="card_title" style="font-size: 40px;">Your Daily Skin Luxuries</h4>
-                                        <p class="card_text" style="font-size: 20px;">Minimal steps. Maximum glow</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 order-md-1 order-0">
+                            <div class="col-md-12 order-md-1 order-0">
                                 <div class="card_img">
-                                    <img src="<?php echo url(''); ?>/assets/images/canntum_banner.png" alt="...">
+                                    @if ($offer && $offer->image)
+                                        <img src="{{ asset('public/offer_images/' . $offer->image) }}" alt="Offer Image">
+                                    @else
+                                        <img src="<?php echo url(''); ?>/assets/images/canntum_banner.png" alt="Default Offer Image">
+                                    @endif
                                 </div>
                             </div>
                         </div>

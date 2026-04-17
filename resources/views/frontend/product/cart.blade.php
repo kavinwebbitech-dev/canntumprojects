@@ -245,13 +245,6 @@
                                     <dd class="col-6">
                                         <p class="text-end">₹ {{ round($total) }}</p>
                                     </dd>
-
-                                    <dd class="col-6">
-                                        <p>Shipping</p>
-                                    </dd>
-                                    <dd class="col-6">
-                                        <p class="text-end">FREE</p>
-                                    </dd>
                                 </dl>
 
                                 <div class="final_cost">
