@@ -153,9 +153,9 @@
                                 // $final_gst = $calculated_gst > 0 ? $calculated_gst : (float) ($order->gst ?? 0);
 
                                 // If avgGstRate is still 0 but we have gst amount, derive from amounts
-                                if ($avgGstRate == 0 && $subtotal > 0 && $final_gst > 0) {
-                                    $avgGstRate = round(($final_gst / $subtotal) * 100);
-                                }
+                                // if ($avgGstRate == 0 && $subtotal > 0 && $final_gst > 0) {
+                                //     $avgGstRate = round(($final_gst / $subtotal) * 100);
+                                // }
 
                                 $coupon = (float) ($order->coupon_discount ?? 0);
                                 $shippingCharge = (float) ($order->shipping_charge ?? 0);

@@ -30,6 +30,7 @@ class PaymentController extends Controller
 {
     public function paymentProcess(Request $request, SmsService $smsService)
     {
+        
         $shipping_address_id = $request->shipping_address;
         $shipping_address = Address::find($shipping_address_id);
 
@@ -78,7 +79,6 @@ class PaymentController extends Controller
             $order->payment_order_id = $invoiceNumber;
             $order->coupon_id = session('coupon.id');
             $order->save();
-
             if ($order->coupon_id) {
                 $coupon = Coupon::find($order->coupon_id);
                 if ($coupon && $coupon->user_limit > 0) {
@@ -87,12 +87,29 @@ class PaymentController extends Controller
             }
 
             foreach ($cartProducts as $productDetails) {
-                $product_details = ProductDetail::find($productDetails['id']);
-                if ($product_details) {
-                    $product_details->decrement('quantity', $productDetails['quantity']);
-                }
+                // $product_details = ProductDetail::find($productDetails['id']);
+                // if ($product_details) {
+                //     $product_details->decrement('quantity', $productDetails['quantity']);
+                // }
 
-                $product = Product::find($product_details->product_id);
+                // $product = Product::find($product_details->product_id);
+                
+                $product_details = ProductDetail::find($productDetails['id']);
+
+                    if (!$product_details) {
+                        continue; // skip invalid item
+                    }
+                
+                    // Update stock
+                    $product_details->decrement('quantity', $productDetails['quantity']);
+                
+                    // Now it's safe
+                    $product = Product::find($product_details->product_id);
+                
+                    if (!$product) {
+                        continue;
+                    }
+    
                 $ProductDiscountedPrice = $product_details->price - ($product_details->price * ($product->discount / 100));
 
                 $orderDetail = new OrderDetail();
@@ -122,15 +139,48 @@ class PaymentController extends Controller
             ];
 
             $smsService->sendSms(auth()->user()->phone, $order->payment_order_id, 'order_confirmed');
-
+    
             $pdf = PDF::loadView('frontend.product.invoice', $data)->setPaper('a4')->setOptions(['isRemoteEnabled' => true]);
             // return $pdf->stream();
-            
-            Mail::raw('New Order placed.', function ($message) use ($pdf) {
-                $message->to(auth()->user()->email)->subject('Invoice')->attachData($pdf->output(), 'invoice.pdf');
-            });
 
+            
+            
+            // if (auth()->user()->email) {
+
+            //     Mail::raw('New Order placed.', function ($message) use ($pdf) {
+            //         $message->to(auth()->user()->email)->subject('Invoice')->attachData($pdf->output(), 'invoice.pdf');
+            //     });
+            // }
+            
+            // Mail::raw('A new order has been placed.', function ($message) {
+            //     $message->to('canntumemporium@gmail.com')->subject('New Order Success');
+            // });
+            
+            // User Email
+                try {
+                    if (auth()->user()->email) {
+                        Mail::raw('New Order placed.', function ($message) use ($pdf) {
+                            $message->to(auth()->user()->email)
+                                ->subject('Invoice')
+                                ->attachData($pdf->output(), 'invoice.pdf');
+                        });
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('User Mail Error: ' . $e->getMessage());
+                }
+                
+                // Admin Email
+                try {
+                    Mail::raw('A new order has been placed.', function ($message) {
+                        $message->to('canntumemporium@gmail.com')
+                            ->subject('New Order Success');
+                    });
+                } catch (\Exception $e) {
+                    \Log::error('Admin Mail Error: ' . $e->getMessage());
+                }
+            
             session()->forget(['cart', 'coupon']);
+            
             return view('frontend.product.thankyou', compact('order', 'shipping_address'));
         }
 
@@ -138,7 +188,6 @@ class PaymentController extends Controller
         // Razorpay Online Payment
         // -----------------------------
         else if ($payment_method == 'razorpay') {
-            // dd($total_amount);
             $amountInPaise = round($total_amount, 2) * 100;
             $key_id = env('RAZORPAY_KEY');
             $key_secret = env('RAZORPAY_SECRET');
@@ -237,13 +286,30 @@ class PaymentController extends Controller
 
             // ✅ 3. Save Order Details & Update Stock
             foreach ($cartProducts as $item) {
-                $product_details = ProductDetail::find($item['id']);
-                // dd($product_details);
-                if ($product_details) {
-                    $product_details->decrement('quantity', $item['quantity']);
-                }
+                // $product_details = ProductDetail::find($item['id']);
+    
+                // if ($product_details) {
+                //     $product_details->decrement('quantity', $item['quantity']);
+                // }
 
-                $product = Product::find($product_details->product_id);
+                // $product = Product::find($product_details->product_id);
+                
+                $product_details = ProductDetail::find($item['id']);
+
+                    if (!$product_details) {
+                        continue; // skip invalid item
+                    }
+                
+                    // Update stock
+                    $product_details->decrement('quantity', $item['quantity']);
+                
+                    // Now it's safe
+                    $product = Product::find($product_details->product_id);
+                
+                    if (!$product) {
+                        continue;
+                    }
+    
                 $discountedPrice = $product_details->price - ($product_details->price * ($product->discount / 100));
 
                 $orderDetail = new OrderDetail();
@@ -263,13 +329,63 @@ class PaymentController extends Controller
                 $orderDetail->selected_image = $product_details['selected_image'] ?? null;
                 $orderDetail->save();
             }
+            
+            $order_details = OrderDetail::where('order_id', $order->id)->get();
+            $shipping_address = Address::find($order->shipping_address);
 
+            $data = [
+                'shipping_address' => $shipping_address,
+                'order'            => $order,
+                'order_details'    => $order_details,
+                'total_gst'        => $order->gst,
+                'invoiceNumber'    => $order->payment_order_id,
+            ];
+
+            $pdf = PDF::loadView('frontend.product.invoice', $data)
+                ->setPaper('a4')
+                ->setOptions(['isRemoteEnabled' => true]);
+
+            // ✅ Send Invoice Email ONLY ONCE
+            // if (auth()->user()->email) {
+            //     Mail::raw('Your order has been placed successfully.', function ($message) use ($pdf) {
+            //         $message->to(auth()->user()->email)
+            //             ->subject('Invoice')
+            //             ->attachData($pdf->output(), 'invoice.pdf');
+            //     });
+            // }
+            
+            //  Mail::raw('A new order has been placed.', function ($message) {
+            //     $message->to('canntumemporium@gmail.com')->subject('New Order Success');
+            // });
+            
+            // Send invoice to user
+            try {
+                if (auth()->user()->email) {
+                    Mail::raw('Your order has been placed successfully.', function ($message) use ($pdf) {
+                        $message->to(auth()->user()->email)
+                            ->subject('Invoice')
+                            ->attachData($pdf->output(), 'invoice.pdf');
+                    });
+                }
+            } catch (\Exception $e) {
+                \Log::error('User Mail Error: ' . $e->getMessage());
+            }
+            
+            // Send notification to admin
+            try {
+                Mail::raw('A new order has been placed.', function ($message) {
+                    $message->to('canntumemporium@gmail.com')
+                        ->subject('New Order Success');
+                });
+            } catch (\Exception $e) {
+                \Log::error('Admin Mail Error: ' . $e->getMessage());
+            }
+            
+            
             // ✅ 4. Cleanup and Notifications
             session()->forget(['cart', 'coupon', 'razorpay_order_pending']);
 
-            Mail::raw('A new order has been placed.', function ($message) {
-                $message->to('canntumemporium@gmail.com')->subject('New Order Success');
-            });
+           
 
             $smsService->sendSms(auth()->user()->phone, $order->payment_order_id, 'order_confirmed');
 

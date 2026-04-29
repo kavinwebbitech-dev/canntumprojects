@@ -415,26 +415,26 @@ color: #fff !important;
                         <h2 class="detail_title mb-0">{{ $product->product_name ?? '' }}</h2>
                         <div class="d-flex align-items-center gap-3">
                            @php
-                            function formatIndianCurrency($number) {
-                                $number = (string) round($number);
-                                $len = strlen($number);
-                                if ($len <= 3) return $number;
-
-                                $last3 = substr($number, -3);
-                                $rest = substr($number, 0, $len - 3);
-                                return preg_replace("/\B(?=(\d{2})+(?!\d))/", ",", $rest) . "," . $last3;
-                            }
-                            @endphp
-
-                            <h3 class="product_rate mb-0">
-                                ₹ {{ formatIndianCurrency($discountedPrice) }}
-                            </h3>
-
-                            @if ($price && $product->discount)
-                                <span class="amount_strike text-decoration-line-through">
-                                    ₹ {{ formatIndianCurrency($price) }}
-                                </span>
-                            @endif
+                                function formatIndianCurrency($number) {
+                                    $number = (string) round($number);
+                                    $len = strlen($number);
+                                    if ($len <= 3) return $number;
+                                
+                                    $last3 = substr($number, -3);
+                                    $rest = substr($number, 0, $len - 3);
+                                    return preg_replace("/\B(?=(\d{2})+(?!\d))/", ",", $rest) . "," . $last3;
+                                }
+                                @endphp
+                                
+                                <h3 class="product_rate mb-0">
+                                    ₹ {{ formatIndianCurrency($discountedPrice) }}
+                                </h3>
+                                
+                                @if ($price && $product->discount)
+                                    <span class="amount_strike text-decoration-line-through">
+                                        ₹ {{ formatIndianCurrency($price) }}
+                                    </span>
+                                @endif
                             @if ($product->discount)
                                 <span class="offer-amount text-success">{{ round($product->discount) }}% Off</span>
                             @endif
@@ -556,10 +556,11 @@ color: #fff !important;
 
                                                 {{-- 🛒 BUY NOW --}}
                                                 <a href="javascript:void(0);" 
-                                                data-product-id="{{ $activeVariant->id }}"
-                                                class="btn book_btn buy-now-btn w-100 {{ $isInCart ? 'disabled' : '' }}"
-                                                style="{{ $isInCart ? 'opacity:0.5; pointer-events:none;' : '' }}">
-                                                    Buy Now
+                                                   data-product-id="{{ $activeVariant->id }}"
+                                                   class="btn book_btn buy-now-btn w-100 
+                                                   {{ ($isInCart && $activeVariant->quantity == 1) ? 'disabled' : '' }}"
+                                                   style="{{ ($isInCart && $activeVariant->quantity == 1) ? 'opacity:0.5; pointer-events:none;' : '' }}">
+                                                   Buy Now
                                                 </a>
 
                                             </div>
@@ -592,20 +593,7 @@ color: #fff !important;
                                     {{-- ❌ OUT OF STOCK --}}
                                     @else
 
-                                        {{-- <div class="alert alert-warning text-center" style="font-size: 16px;border-radius: 0;width: 365px;">
-                                            <strong>Out of Stock</strong>
-                                        </div>
-                                        <div class="d-flex flex-column justify-content-center align-items-center" style="margin-left: 30px;">
-                                                <a href="javascript:void(0);" data-product-id="{{ $product->id }}"
-                                                    id="add-wishlist-btn-{{ $product->id }}"
-                                                    class="btn wishlist_btn add-to-wishlist-button p-0">
-                                                    <i class="bi bi-heart-fill" style="font-size:22px;"></i>
-                                                </a>
-                                                <a id="adding-wishlist-{{ $product->id }}" data-product-id="{{ $product->id }}"
-                                                    class="btn wishlist_btn remove-to-wishlist-button p-0" style="display: none;">
-                                                    <i class="bi bi-heart-fill" style="font-size:22px;"></i>
-                                                </a>
-                                        </div> --}}
+                                      
 
                                         <div class="d-flex justify-content-between align-items-center" style="gap:10px;">
 
@@ -674,7 +662,9 @@ color: #fff !important;
                 
             </div><br>
             <div class="row mt-4 gap-2 gap-lg-0">
-               <div class="col-md-6">
+
+                <!-- LEFT: FULL HEIGHT IMAGE -->
+              <div class="col-md-6">
                     <div class="left-sticky-image">
                         @php
                             $img = $productDetail->gallery_images;
@@ -922,18 +912,46 @@ $(document).ready(function () {
     });
 
     // ===== ADD TO CART =====
-    $(document).on('click', '.add-to-cart-btn', function () {
-        var productId = $(this).data('product-id');
-        $.ajax({
-            type: 'GET',
-            url: '{{ url('add-to-cart') }}/' + productId,
-            data: { image_index: selectedImageIndex },
-           success: function () {
-                window.location.reload();   
-                $('#add-cart-btnn-' + productId).hide();
-                $('#adding-cart-' + productId).show();
+    // $(document).on('click', '.add-to-cart-btn', function () {
+    //     var productId = $(this).data('product-id');
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: '{{ url('add-to-cart') }}/' + productId,
+    //         data: { image_index: selectedImageIndex },
+    //       success: function () {
+    //             window.location.reload();   
+    //             $('#add-cart-btnn-' + productId).hide();
+    //             $('#adding-cart-' + productId).show();
 
-                // 🔥 Disable Buy Now immediately
+    //             // 🔥 Disable Buy Now immediately
+    //             $('.buy-now-btn[data-product-id="' + productId + '"]')
+    //                 .addClass('disabled')
+    //                 .css({
+    //                     'opacity': '0.5',
+    //                     'pointer-events': 'none'
+    //                 });
+    //         }
+    //     });
+    // });
+    
+    $(document).on('click', '.add-to-cart-btn', function () {
+    var productId = $(this).data('product-id');
+    var qty = parseInt($(this).data('qty')); // ✅ get quantity
+
+    $.ajax({
+        type: 'GET',
+        url: '{{ url('add-to-cart') }}/' + productId,
+        data: { image_index: selectedImageIndex },
+        success: function () {
+
+            // OPTIONAL: remove reload if you want smooth UX
+            window.location.reload();
+
+            $('#add-cart-btnn-' + productId).hide();
+            $('#adding-cart-' + productId).show();
+
+            // ✅ Disable ONLY if qty == 1
+            if (qty === 1) {
                 $('.buy-now-btn[data-product-id="' + productId + '"]')
                     .addClass('disabled')
                     .css({
@@ -941,8 +959,10 @@ $(document).ready(function () {
                         'pointer-events': 'none'
                     });
             }
-        });
+        }
     });
+});
+    
     $(document).on('click', '.buy-now-btn', function () {
     if ($(this).hasClass('disabled')) return false;
 });
