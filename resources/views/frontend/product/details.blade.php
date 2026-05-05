@@ -313,6 +313,17 @@ background-color: #272727 !important;
 border-color: #272727 !important;
 color: #fff !important;
 }
+
+.left-sticky-image img  {
+     height: 500px !important;
+}
+@media (max-width: 768px) { 
+    .left-sticky-image img { 
+        height: auto !important;
+        
+    }
+}
+
 </style>
 
 
@@ -673,7 +684,7 @@ color: #fff !important;
                         @if (!empty($img))
                             <img src="{{ url('public/gallery_images/' . $img) }}"
                                 id="productDetailSideImage1232"
-                                style="object-fit: inherit; width: 100%; height: 500px !important">
+                                style="object-fit: inherit; width: 100%;" >
                         @else
                             <img src="{{ url('public/product_images/' . $product->product_img) }}"
                                 id="productDetailSideImage1232"
