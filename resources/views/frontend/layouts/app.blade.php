@@ -140,6 +140,8 @@
             width: 100%;
             /* white-space: nowrap; */
             max-width: 100%;
+            background-color: #272727 !important;
+            color: #fff !important
             /* responsive */
         }
     </style>

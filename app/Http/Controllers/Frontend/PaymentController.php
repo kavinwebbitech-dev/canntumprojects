@@ -138,7 +138,7 @@ class PaymentController extends Controller
                 'invoiceNumber'    => $invoiceNumber,
             ];
 
-            $smsService->sendSms(auth()->user()->phone, $order->payment_order_id, 'order_confirmed');
+            $smsService->sendSms($shipping_address->shipping_phone, $order->payment_order_id, 'order_confirmed');
     
             $pdf = PDF::loadView('frontend.product.invoice', $data)->setPaper('a4')->setOptions(['isRemoteEnabled' => true]);
             // return $pdf->stream();
@@ -385,9 +385,8 @@ class PaymentController extends Controller
             // ✅ 4. Cleanup and Notifications
             session()->forget(['cart', 'coupon', 'razorpay_order_pending']);
 
-           
 
-            $smsService->sendSms(auth()->user()->phone, $order->payment_order_id, 'order_confirmed');
+            $smsService->sendSms($shipping_address->shipping_phone, $order->payment_order_id, 'order_confirmed');
 
             return view('frontend.product.thank_you_online', compact('order'));
         } else {

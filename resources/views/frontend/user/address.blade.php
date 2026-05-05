@@ -49,12 +49,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Country*</label>
-                            <select name="country" id="country" class="form-control" required>
-                                <option value="">Select Country</option>
-                                @foreach ($countries as $country)
-                                    <option value="{{ $country->name }}">{{ $country->name }}</option>
-                                @endforeach
+                            <select name="country_display" class="form-control" disabled>
+                                <option selected>India</option>
                             </select>
+
+                            <input type="hidden" name="country" id="country" value="India">
                         </div>
 
                         <div class="col-md-6 d-flex gap-1">
@@ -64,7 +63,7 @@
                                     <option value="">Select State</option>
                                 </select>
                             </div>
-                            <div class="col-md-3"> 
+                            <div class="col-md-3">
                                 <label class="form-label">State Code</label>
                                 <input type="text" id="state_code" name="state_code" class="form-control" readonly>
                             </div>
@@ -350,7 +349,7 @@
                 const res = await fetch(countryApi);
                 const data = await res.json();
 
-                const selectedCountry = data.data.find(c => c.name === this.value);
+                const selectedCountry = data.data.find(c => c.name === "India");
 
                 if (selectedCountry && selectedCountry.states.length) {
                     selectedCountry.states.forEach(s => {
@@ -409,6 +408,11 @@
             } catch (e) {
                 console.error("City load error", e);
             }
+        });
+
+        window.addEventListener('load', function() {
+            const event = new Event('change');
+            document.getElementById("country").dispatchEvent(event);
         });
     </script>
 @endsection

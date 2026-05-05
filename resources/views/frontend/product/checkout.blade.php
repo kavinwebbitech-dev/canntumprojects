@@ -105,11 +105,10 @@
                         <div class="col-md-6">
                             <label class="form-label">Country*</label>
                             <select name="country" id="country" class="form-control" required>
-                                <option value="">Select Country</option>
-                                @foreach ($countries as $country)
-                                    <option value="{{ $country->name }}">{{ $country->name }}</option>
-                                @endforeach
+                                <option selected>India</option>
                             </select>
+
+                            <input type="hidden" name="country" id="country" value="India">
                         </div>
 
                         <div class="col-md-6 d-flex gap-1 ">
@@ -424,10 +423,10 @@
                                     <span>₹ <span id="coupon">{{ number_format($couponDiscount, 2) }}</span></span>
                                 </div>
 
-                               <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex justify-content-between mb-3">
                                     <span>Shipping</span>
                                     <span>
-                                        @if($shipping_charge > 0)
+                                        @if ($shipping_charge > 0)
                                             ₹ {{ number_format($shipping_charge, 2) }}
                                         @else
                                             FREE
@@ -453,8 +452,7 @@
                                     <input type="hidden" name="shipping_address" value="{{ $getDefaultAddress->id }}">
                                 @endif
                                 <!-- Hidden Inputs -->
-                                <input type="hidden" name="total_amount"
-                                    value="{{ $total - $couponDiscount }}">
+                                <input type="hidden" name="total_amount" value="{{ $total - $couponDiscount }}">
                                 <input type="hidden" name="shipping_charge" value="{{ $shipping_charge }}">
                                 <input type="hidden" name="coupon_discount"
                                     value="{{ number_format($couponDiscount, 2) }}">
@@ -551,7 +549,7 @@
             </div>
 
 
-               <div class="modal fade form_modal" id="editaddress" tabindex="-1" aria-labelledby="editAddressModalLabel"
+            <div class="modal fade form_modal" id="editaddress" tabindex="-1" aria-labelledby="editAddressModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
@@ -598,12 +596,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Country*</label>
                                     <select name="country" id="edit_country" class="form-control" required>
-                                        <option value="">Select Country</option>
-                                        @foreach ($countries as $country)
-                                            <option value="{{ $country->name }}">
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
+                                        <option value="India" selected>India</option>
                                     </select>
                                 </div>
 
@@ -725,7 +718,7 @@
                 const res = await fetch(countryApi);
                 const data = await res.json();
 
-                const selectedCountry = data.data.find(c => c.name === countryName);
+                const selectedCountry = data.data.find(c => c.name === "India");
 
                 if (selectedCountry && selectedCountry.states.length) {
                     selectedCountry.states.forEach(s => {
@@ -846,8 +839,13 @@
             });
 
         });
+
+        window.addEventListener('load', function() {
+            const event = new Event('change');
+            document.getElementById("country").dispatchEvent(event);
+        });
     </script>
-  
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -895,9 +893,4 @@
             }
         });
     </script>
-
-
-
-
-
 @endsection

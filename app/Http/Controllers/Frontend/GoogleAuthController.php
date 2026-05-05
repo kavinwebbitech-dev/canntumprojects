@@ -51,6 +51,6 @@ class GoogleAuthController extends Controller
             Auth::login($newUser);
         }
 
-        return redirect()->route('home')->with('success', 'Your logged in successfully!!');
+        return redirect()->route('home')->with('success', 'logged in');
     }
 }

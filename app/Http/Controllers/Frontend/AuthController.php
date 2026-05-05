@@ -15,7 +15,7 @@ use App\Services\SmsService;
 use Carbon\Carbon;
 
 class AuthController extends Controller
-{
+{ 
 
     public function register()
     {
@@ -129,7 +129,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Logged in successfully..!');
+        return redirect('/')->with('success', 'Logged in');
     }
 
 
@@ -165,7 +165,7 @@ class AuthController extends Controller
 
             try {
                 Mail::send('frontend.auth.email.forget_password', $userdata, function ($message) use ($userdata) {
-                    $message->from('preethabtechit252@gmail.com', 'OTP')
+                    $message->from('canntumemporium@gmail.com', 'OTP')
                         ->to($userdata['email'])
                         ->subject('Verification code');
                 });
@@ -205,7 +205,7 @@ class AuthController extends Controller
 
         try {
             Mail::send('frontend.auth.email.otp', $userdata, function ($message) use ($userdata) {
-                $message->from('preethabtechit252@gmail.com', 'OTP')
+                $message->from('canntumemporium@gmail.com', 'OTP')
                     ->to($userdata['email'])
                     ->subject('Verification code');
             });
@@ -225,7 +225,7 @@ class AuthController extends Controller
             $user->save();
             Auth::login($user);
             // return view('frontend.my_profile',compact('user'))->with('success', 'Your logged in successfully!!');
-            return redirect()->route('user.dashboard')->with('success', 'logged in successfully..!');
+            return redirect()->route('user.dashboard')->with('success', 'logged in');
         } else {
 
             return redirect()->route('login.otp')->with('danger', 'Verification code does not match!!');
@@ -263,7 +263,7 @@ class AuthController extends Controller
             ];
 
             Mail::send('frontend.auth.email.forget_password', $userdata, function ($message) use ($userdata) {
-                $message->from('preethabtechit252@gmail.com', 'OTP')
+                $message->from('canntumemporium@gmail.com', 'OTP')
                     ->to($userdata['email'])
                     ->subject('Verification code');
             });
@@ -313,6 +313,6 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('user.login')
-            ->with('success', 'logged out successfully..!');
+            ->with('success', 'logged out');
     }
 }
