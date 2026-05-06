@@ -212,7 +212,7 @@
                                                                     id="quantity_{{ $id }}"
                                                                     value="{{ $details['quantity'] }}" min="1"
                                                                     max="{{ $productDetail->quantity }}"
-                                                                    style="background: antiquewhite;">
+                                                                    style="background: #f3f3f3;">
 
                                                                 <button
                                                                     class="btn btn-outline-secondary btn-sm increase-qty">+</button>

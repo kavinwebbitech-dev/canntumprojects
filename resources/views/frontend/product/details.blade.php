@@ -34,7 +34,7 @@
     {
         width: 100%;
         height: 100%;
-        min-height: 82px;
+        min-height: 70px;
         
     }
     .amount_strike {
@@ -145,6 +145,7 @@
         pointer-events: none;
     }
 
+
     /* ===== PRODUCT DETAILS ACCORDION — fixed height + scroll ===== */
     .product-details-with-image {
         display: flex;
@@ -209,120 +210,123 @@
             width: 100%;
             height: 200px;
         }
+        .review-section-wrapper {
+            padding: 0px 15px;
+        }
     }
  
     .new-colr {
         background-color: #272727 !important;
     }
-.card_img img {
-    width: 100%;
-    height: 80px;
-    object-fit: contain; /* Prevents logo/image from being cropped weirdly */
-    background: #f9f9f9;
-}
+        .card_img img {
+            width: 100%;
+            height: 80px;
+            object-fit: contain; /* Prevents logo/image from being cropped weirdly */
+            background: #f9f9f9;
+        }
 
-.product_card {
-    border: 1px solid #eee;
-    padding: 10px;
-    border-radius: 5px;
-    transition: 0.3s;
-}
+        .product_card {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
 
-.product_card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.img-zoom-container {
-  position: relative;
-  cursor: crosshair;
-}
+        .product_card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .img-zoom-container {
+        position: relative;
+        cursor: crosshair;
+        }
 
-.img-zoom-lens {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  /* Size of the lens */
-  width: 150px;
-  height: 150px;
-  background-color: rgba(255, 255, 255, 0.4);
-  visibility: hidden; /* Hidden by default */
-}
+        .img-zoom-lens {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        /* Size of the lens */
+        width: 150px;
+        height: 150px;
+        background-color: rgba(255, 255, 255, 0.4);
+        visibility: hidden; /* Hidden by default */
+        }
 
-.img-zoom-result {
-  border: 1px solid #d4d4d4;
-  width: 400px;
-  height: 400px;
-  position: absolute;
-  left: 105%; /* Pushes it to the right of the main image */
-  top: 0;
-  z-index: 999;
-  background-repeat: no-repeat;
-  visibility: hidden; /* Hidden by default */
-  background-color: white;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
+        .img-zoom-result {
+        border: 1px solid #d4d4d4;
+        width: 400px;
+        height: 400px;
+        position: absolute;
+        left: 105%; /* Pushes it to the right of the main image */
+        top: 0;
+        z-index: 999;
+        background-repeat: no-repeat;
+        visibility: hidden; /* Hidden by default */
+        background-color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
 
-/* Show lens and result on hover */
-.img-zoom-container:hover .img-zoom-lens,
-.img-zoom-container:hover + .img-zoom-result,
-.img-zoom-container:hover ~ .img-zoom-result {
-  visibility: visible;
-}
-.review-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* Ensures all cards in a row have equal height */
-    min-height: 350px; /* Set a minimum height for consistency */
-    padding: 20px;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    text-align: center;
-}
+        /* Show lens and result on hover */
+        .img-zoom-container:hover .img-zoom-lens,
+        .img-zoom-container:hover + .img-zoom-result,
+        .img-zoom-container:hover ~ .img-zoom-result {
+        visibility: visible;
+        }
+        .review-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Ensures all cards in a row have equal height */
+            min-height: 350px; /* Set a minimum height for consistency */
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            text-align: center;
+        }
 
-.review-comment {
-    flex-grow: 1; /* This pushes the date section to the bottom */
-    display: flex;
-    align-items: center; /* Centers short comments vertically */
-    justify-content: center;
-    margin: 15px 0;
-    font-style: italic;
-    color: #555;
-    overflow-wrap: break-word; /* Prevents long text from breaking layout */
-}
+        .review-comment {
+            flex-grow: 1; /* This pushes the date section to the bottom */
+            display: flex;
+            align-items: center; /* Centers short comments vertically */
+            justify-content: center;
+            margin: 15px 0;
+            font-style: italic;
+            color: #555;
+            overflow-wrap: break-word; /* Prevents long text from breaking layout */
+        }
 
-.review-footer {
-    margin-top: auto; /* Force to bottom if flex-grow isn't enough */
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-}
-ul {
-        list-style-type: disc;
-}
+        .review-footer {
+            margin-top: auto; /* Force to bottom if flex-grow isn't enough */
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        ul {
+                list-style-type: disc;
+        }
 
-ol {
-        list-style-type: decimal;
-}
-.butt-col.btn.active,
-.butt-col.btn:active {
-background-color: #272727 !important;
-border-color: #272727 !important;
-color: #fff !important;
-}
-.butt-col.btn:hover,
-.butt-col.btn:focus {
-background-color: #272727 !important;
-border-color: #272727 !important;
-color: #fff !important;
-}
+        ol {
+                list-style-type: decimal;
+        }
+        .butt-col.btn.active,
+        .butt-col.btn:active {
+        background-color: #272727 !important;
+        border-color: #272727 !important;
+        color: #fff !important;
+        }
+        .butt-col.btn:hover,
+        .butt-col.btn:focus {
+        background-color: #272727 !important;
+        border-color: #272727 !important;
+        color: #fff !important;
+        }
 
-.left-sticky-image img  {
-     height: 500px !important;
-}
-@media (max-width: 768px) { 
-    .left-sticky-image img { 
-        height: auto !important;
-        
-    }
-}
+        .left-sticky-image img  {
+            height: 500px !important;
+        }
+        @media (max-width: 768px) { 
+            .left-sticky-image img { 
+                height: auto !important;
+                
+            }
+        }
 
 </style>
 
@@ -833,25 +837,28 @@ color: #fff !important;
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
-    // ===== REVIEWS SWIPER (single instance, no autoplay) =====
-    var reviewCount = Math.min({{ $reviews->count() }}, 6);
+   var reviewCount = Math.min({{ $reviews->count() }}, 6);
 
     new Swiper(".reviewSwiper", {
-        slidesPerView: Math.min(reviewCount, 3),
+        slidesPerView: 3,
         spaceBetween: 20,
-        loop: false,
-        autoplay: false,
+        loop: reviewCount > 3,   // 👈 enable loop only if enough slides
+        centeredSlides: false,
+        slidesPerGroup: 1,       // smooth movement
+
         navigation: {
-            prevEl: ".review-btn-prev",
             nextEl: ".review-btn-next",
+            prevEl: ".review-btn-prev"
         },
+
         breakpoints: {
-            0:   { slidesPerView: 1 },
-            576: { slidesPerView: Math.min(reviewCount, 2) },
-            992: { slidesPerView: Math.min(reviewCount, 3) },
-        },
+            0: { slidesPerView: 1 },
+            576: { slidesPerView: 2 },
+            992: { slidesPerView: 3 }
+        }
     });
 </script>
 
