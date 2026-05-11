@@ -79,7 +79,7 @@
 
     .review-card {
         background: #fdfdfd;
-        border-radius: 12px;
+        /*border-radius: 12px;*/
         border: 1px solid #f0f0f0;
         padding: 20px;
         text-align: center;
@@ -279,7 +279,7 @@
             padding: 20px;
             background: #fff;
             border: 1px solid #eee;
-            border-radius: 10px;
+            /*border-radius: 10px;*/
             text-align: center;
         }
 
@@ -701,9 +701,9 @@
                 <!-- RIGHT: ACCORDION -->
                <div class="col-md-6">
                     <div class="accordion" id="accordionExample">
-                        <div class="accordion-item">
+                        <div class="accordion-item"style="border-radius: 0;border-top-left-radius: 0px;border-top-right-radius: 0px;">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button"
+                                <button class="accordion-button" type="button" style="border-radius: 0;"
                                     data-bs-toggle="collapse"
                                     data-bs-target="#collapseOne">
                                     PRODUCT DETAILS

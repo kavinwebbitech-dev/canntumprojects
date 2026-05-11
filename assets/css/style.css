@@ -2164,7 +2164,8 @@ textarea:focus {
 
 .product_detail_inner .thumbnail:hover .thumbnail,
 .selected.thumbnail {
-    border: 1px solid var(--green-color);
+    border: 1px solid #272727;
+    border-radius: 0;
 }
 
 .product_detail_inner .thumbnail-image {
@@ -2173,7 +2174,7 @@ textarea:focus {
     background-size: cover;
     background-position: top center;
     background-repeat: no-repeat;
-    border-radius: 10px;
+    /*border-radius: 10px;*/
 }
 
 .product_detail_inner .related_products .product_card {
